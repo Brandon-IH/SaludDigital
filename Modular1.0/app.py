@@ -30,12 +30,18 @@ from email.message import EmailMessage
 logging.basicConfig(level=logging.INFO)  # Configura el nivel de log a INFO
 logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo actual
 
-DATABASE_URL = os.getenv("DATABASE_URL")  # Railway autogenera esta variable
+# Intenta obtener DATABASE_URL desde variables de entorno
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Fallback en caso de que estés trabajando localmente
+if not DATABASE_URL:
+    logger.warning("⚠️ DATABASE_URL no encontrada en variables de entorno, usando URL local")
+    DATABASE_URL = "postgresql://usuario:contraseña@host:puerto/nombre_basedatos"
 
 try:
-    conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)  
+    conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
     cur = conn.cursor()
-    
+
     logger.info("✅ Conexión a la base de datos exitosa")
 
     cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';")
