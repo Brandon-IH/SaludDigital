@@ -30,19 +30,39 @@ from email.message import EmailMessage
 logging.basicConfig(level=logging.INFO)  # Configura el nivel de log a INFO
 logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo actual
 
+# Obtener la URL de la base de datos desde Railway
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    logger.error("❌ Error: La variable DATABASE_URL no está definida en Railway.")
+    exit(1)  # Termina la ejecución si la variable de entorno no está configurada
+
 try:
-    # Obtener la URL de la base de datos desde Railway
-    DATABASE_URL = os.getenv("DATABASE_URL")  # Debes agregar esta variable en Railway
-
-    # Conectar a PostgreSQL con la URL de Railway
-    conn = psycopg2.connect(DATABASE_URL)
+    # Conectar a PostgreSQL con timeout para evitar bloqueos
+    conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)  
     cur = conn.cursor()
+    
+    logger.info("✅ Conexión a la base de datos exitosa")  # Log de éxito
+    
+    # Prueba rápida: Obtener las tablas disponibles
+    cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';")
+    tables = cur.fetchall()
+    logger.info(f"📄 Tablas en la base de datos: {tables}")
 
-    logger.info("Conexión a la base de datos exitosa")  # Registra el éxito
+except psycopg2.OperationalError as e:
+    logger.error(f"❌ Error de conexión a PostgreSQL: {e}")
+    exit(1)
 
 except Exception as e:
-    logger.error(f"Error de conexión a la base de datos: {e}")  # Registra el error
-    exit(1)  # Termina la ejecución si hay un problema
+    logger.error(f"⚠️ Error inesperado: {e}")
+    exit(1)
+
+finally:
+    if 'conn' in locals():
+        cur.close()
+        conn.close()
+        logger.info("🔄 Conexión cerrada correctamente")
+
 
 
 def enviar_correo_bienvenida(destinatario, nombre_usuario, password):
