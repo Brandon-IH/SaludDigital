@@ -30,23 +30,20 @@ from email.message import EmailMessage
 logging.basicConfig(level=logging.INFO)  # Configura el nivel de log a INFO
 logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo actual
 
-# Definir manualmente la URL de la base de datos
-DATABASE_URL = "postgresql://postgres:DkpudEUPuVLMNzFbqzjfQoDVAPJwaKhH@postgres.railway.internal:5432/railway"
+DATABASE_URL = os.getenv("DATABASE_URL")  # Railway autogenera esta variable
 
 try:
-    # Conectar a PostgreSQL con timeout para evitar bloqueos
     conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)  
     cur = conn.cursor()
     
-    logger.info("✅ Conexión a la base de datos exitosa")  # Log de éxito
-    
-    # Prueba rápida: Obtener las tablas disponibles
+    logger.info("✅ Conexión a la base de datos exitosa")
+
     cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';")
     tables = cur.fetchall()
     logger.info(f"📄 Tablas en la base de datos: {tables}")
 
 except psycopg2.OperationalError as e:
-    logger.error(f"❌ Error de conexión a PostgreSQL no se que esta pasando: {e}")
+    logger.error(f"❌ Error de conexión a PostgreSQL: {e}")
     exit(1)
 
 except Exception as e:
