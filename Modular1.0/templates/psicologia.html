@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta General - Servicios Médicos</title>
+  <link rel="stylesheet" href="/static/css/consulta.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/servicios.css">
+  <script src="static/js/consulta.js" defer></script>
+</head>
+<body>
+
+  <!-- Menú Lateral -->
+  <aside class="side-menu"> 
+    <img class="logo_cucei" src="/static/img/cucei.png" alt="Logo de CUCEI">
+    <hr>
+    <ul>
+      <li><a class="menu-item" href="/"><img class="logo" src="/static/img/pagina-principal.png"> Dashboard</a></li>
+      <li><a class="menu-item" href="/consulta"><img class="logo" src="/static/img/salud.png"> Enfermería</a></li>
+      <li><a class="menu-item" href="/nutriologia"><img class="logo" src="/static/img/dieta.png"> Nutriología</a></li>
+      <li><a class="menu-item" href="/psicologia"><img class="logo" src="/static/img/salud-mental.png"> Psicología</a></li>
+      <li><a class="menu-item" href="/citas"><img class="logo" src="/static/img/plazo.png"> Citas</a></li>
+      <li><a class="menu-item" href="/profile"><img class="logo" src="/static/img/usuario.png"> Perfil</a></li>
+      <li><a class="menu-item" href="/logout"><img class="logo" src="/static/img/cerrar-sesion.png"> Log out</a></li>
+    </ul>
+  </aside>
+
+  <!-- Contenido Principal -->
+  <main>
+    <nav class="top-menu"> 
+      <button class="toggle-menu" onclick="toggleSideMenu()">☰</button>
+      <ul>
+        <li><a href="/inicio">Inicio</a></li> <!-- Enlace a la página de inicio -->
+        <li><a href="/servicios">Servicios</a></li> <!-- Enlace a la sección de servicios -->
+      </ul>
+    </nav>
+
+    <section class="consulta-general">
+      <h1>Área de Psicología</h1>
+      <div id="grid-container" class="grid-container"></div>
+    
+      <!-- Formulario para agregar nueva tarjeta -->
+      <button class="boton-agregar" onclick="agregarTarjeta()">Agregar Nuevo Servicio</button>
+      <div id="nuevo-formulario" class="formulario-edicion" style="display: none;">
+          <input type="text" id="nuevo-titulo" placeholder="Nombre del servicio">
+          <textarea id="nuevo-contenido" placeholder="Descripción del servicio"></textarea>
+          <button onclick="guardarNuevaTarjeta()">Guardar</button>
+          <button onclick="document.getElementById('nuevo-formulario').style.display='none'">Cancelar</button>
+      </div>
+  </section>
+  
+  
+  </main>
+
+</body>
+</html>

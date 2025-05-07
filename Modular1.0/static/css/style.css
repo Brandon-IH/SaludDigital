@@ -1,0 +1,586 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+hr{
+    width: 90%;
+}
+h1{
+    margin-top: 0;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;      
+    font-size: 3rem;
+}
+
+#button{
+    top: 2.5%;
+    z-index: 1000;
+    padding: 10px;
+    border-radius: 40%;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.active {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+    background-color: #006A60;
+    width: 83%; 
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+    color: white;
+}
+
+#button:hover {
+    background-color:  #006A60;
+    color: white;
+}
+
+.top-menu { 
+    background-color: white; 
+    overflow: hidden; 
+    padding: 10px;
+    border-bottom-right-radius: 20px; 
+    border-bottom-left-radius: 20px;
+    width: 97%;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.01);
+} 
+.top-menu ul { 
+    list-style-type: none; 
+    margin: 1; 
+    padding: 0; 
+    display: flex; 
+    justify-content: end;
+} 
+.top-menu li { 
+    float: left; 
+    font-size: 17px;
+} 
+.top-menu li a { 
+    display: block; 
+    color: black; 
+    text-align: center; 
+    padding: 14px 16px; 
+    text-decoration: none; 
+} 
+.top-menu li a:hover { 
+    background-color:  #006A60; 
+    border-radius: 10px;
+    color: white;
+}
+
+
+main { 
+    margin-left: 18%; /* Ajuste del margen izquierdo */
+    background-color: #ebf2f8; 
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1); 
+    min-height: 100vh;
+    transform: translateY(0);
+    transition: transform 0.3s ease; 
+}
+
+.main-full {
+    margin-left: 0;
+    width: 100%;
+}
+
+#availability {
+    margin: 0;
+}
+
+#status {
+    margin: 0;
+    margin-top: 12px;
+    display: flex;
+}
+
+#status-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: gray;
+}
+
+#dashboard{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 1%;
+    
+}
+.dashboard_section{
+    width: 17%;
+    height: 60px;
+    background-color: white;
+    padding: 10px;
+    border-radius: 20px;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+.dashboard_section:hover{
+    transform: translateY(-10px);
+    transition: transform .3s ease;
+}
+
+.titulo_section_dashboard{
+    font-size: 18px;
+    font-weight: 450;
+    margin: 0;
+}
+.num_dashboard{
+    font-size: 25px;
+    font-weight: 450;
+    margin: 0;
+    margin-top: 10px;
+    text-align: left;
+}
+.img_dashboard{
+    float: right;
+    width: 50px;
+    height: 50px;
+    background-color: rgb(19, 180, 19);
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.section_div{
+    display: inline-flex;
+    justify-content: space-between;
+    width: 70%;
+    height: 50px;
+    padding: 20px;
+}
+
+
+   
+/* Estilos del Menú Izquierdo */ 
+.side-menu {
+    width: 18%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: white;
+    padding-top: 10px;
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+} 
+.side-menu.hidden {
+    transform: translateX(-100%);
+}
+.toggle-menu {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    cursor: pointer;
+    font-size: 25px;
+    background-color: transparent;
+    border: none;
+}
+
+.logo_cucei{
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+.logo{
+    width: 30px;
+    margin-right: 8px;
+}
+
+.side-menu ul {
+    list-style-type: none;
+    padding: 0;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;      
+    font-size: 20px;
+} 
+
+.side-menu li a { 
+    display: block;
+    color: #000; 
+    padding: 10px 15px;
+    text-decoration: none; 
+    display: flex;
+    justify-content: left;
+    align-items: center;
+} 
+.side-menu li a:hover { 
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease;
+    background-color: #006A60;
+    width: 80%; 
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+    color: white;
+}
+.side-menu li a:hover img {
+    filter: invert(1);
+}
+
+.contenedor_grafica_citas {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 1%;
+    width: 95%;
+    height: auto; /* Quitamos altura fija para adaptabilidad */
+    flex-wrap: wrap; /* Permite que se acomode en columnas en pantallas pequeñas */
+}
+
+.contenedor_grafica {
+    width: 50%;
+    height: 430px;
+    aspect-ratio: 1 / 1; /* Hace que el canvas sea cuadrado */
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+
+canvas {
+    background-color: white;
+    border-radius: 20px;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+.citas {
+    width: 45%;
+    height: 450px;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.citas h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#lista-citas {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#lista-citas li {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+footer{   
+    bottom: 0;
+    width: 97%;
+    height: 5%;
+    background-color: #ffffff;
+    padding: 10px;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* Media queries para responsividad */
+
+@media (max-width: 1340px) {
+    main{
+        margin-left: 16%;
+    }
+    #button{
+        top: 1.5%;
+        z-index: 1000;
+        padding: 10px;
+        border-radius: 40%;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+    
+    .side-menu{
+        width: 15%;
+    }
+    #dashboard{
+        display: wrap;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 1%;
+    }
+    .titulo_section_dashboard{
+        font-size: 1rem;
+        font-weight: 450;
+        margin: 0;
+    }
+    .side-menu ul { 
+        font-size: 15px;
+    } 
+    .img_dashboard{
+        float: right;
+        width: 40px;
+        height: 50px;
+        background-color: rgb(19, 180, 19);
+        padding: 5px;
+        border-radius: 10px;
+    }
+    .titulo_section_dashboard{
+        font-size: 17px;
+        font-weight: 450;
+        margin: 0;
+    }
+    .main-full {
+        margin-left: 0;
+        width: 100%;
+    }
+
+}
+
+@media (max-width: 1024px) {
+    main {
+        margin-left: 0;
+        padding-top: 0px;
+    }
+    .img_dashboard{
+        float: right;
+        width: 40px;
+        height: 50px;
+        background-color: rgb(19, 180, 19);
+        padding: 5px;
+        border-radius: 10px;
+    }
+    #button{
+        left: 3%;
+    }
+    .main-full {
+        padding-top: 0px;
+        padding-right: 0px;
+        width: 100%;
+    }
+    
+    .logo_cucei{
+        width: 60%;
+
+    }
+    .side-menu {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+    .side-menu.hidden {
+        display: none;
+    }
+    .top-menu {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    #dashboard {
+        flex-direction: column;
+        align-items: center;
+    }
+    .dashboard_section {
+        width: 90%;
+        margin-bottom: 10px;
+    }
+
+
+    .contenedor_grafica_citas {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .citas {
+        width: 95%;
+        height: 400px;
+    }
+
+
+    footer {
+        bottom: 0;
+        width: 95%;
+        background-color: #ffffff;
+        padding: 10px;
+        text-align: center;
+        border-top-left-radius: 100px;
+        border-top-right-radius: 100px;
+    }
+}
+
+@media (max-width: 800px){
+    .contenedor_grafica{
+        max-width: 80%;
+        min-width: 80%;    
+    }
+}
+
+@media (max-width: 768px) {
+    .main-full {
+        padding-left: 1%;
+        width: 100%;
+    }
+    .top-menu{
+        width: 98%;
+    }
+    .top-menu ul {
+        gap: 5px;    
+    } 
+    #dashboard {
+        width: 90%;
+    }
+    .dashboard_section {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .img_dashboard {
+        width: 50px;
+        height: 80%;
+    }
+    .side-menu{
+        margin-top: 3%;
+        padding: 0px;
+        overflow-x:hidden;
+    }
+    .titulo_section_dashboard {
+        font-size: 1.2rem;
+    }
+    .num_dashboard {
+        font-size: 1.5rem;
+    }
+    .contenedor_grafica_citas {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .citas,
+    .contenedor_grafica {
+        width: 90%;
+        max-width: 90%;
+    }
+    
+    .num_dashboard{
+        font-size: 1.5rem;
+    }
+    footer{
+        border-top: 30%;
+        bottom: 0;
+        width: 95%;
+        background-color: #ffffff;
+        padding: 10px;
+        text-align: center;
+        border-top-right-radius: 100px;
+        border-top-left-radius: 100px;
+    }
+    #button{
+        left: 4%;
+    }
+}
+
+@media (max-width: 480px) {
+    .top-menu{
+        width: 95%;
+    }
+    .top-menu ul {
+        gap: 5px;
+    }
+    .dashboard_section {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .main-full {
+        padding-left: 1%;
+        width: 100%;
+    }
+    #button{
+        top: 1.6%;
+        left: 7%;
+    }
+    .img_dashboard {
+        width: 45px;
+        height: 80%;
+    }
+    .titulo_section_dashboard {
+        font-size: 1.2rem;
+    }
+    .num_dashboard {
+        font-size: 1.3rem;
+    }
+    .contenedor_grafica_citas {
+        flex-direction: column;
+        gap: 20px;
+        padding: 10px;
+    }
+
+    .contenedor_grafica,
+    .citas {
+        max-width: 100%;
+        width: 100%;
+    }
+    .top-menu li { 
+        float: left; 
+        font-size: 15px;
+    } 
+    .top-menu li a { 
+        display: block; 
+        color: black; 
+        text-align: center; 
+        padding: 14px 10px; 
+    }
+    
+    .contenedor_grafica{
+        max-width: 100%;
+        min-width: 100%;
+    }
+    footer{
+        bottom: 0;
+        width: 95%;
+       
+        background-color: #ffffff;
+        padding: 10px;
+        text-align: center;
+        border-top-right-radius: 0;
+    }
+}
+@media (max-width: 320px) {
+    .top-menu{
+        width: 94%;
+    }
+    .top-menu li { 
+        float: left; 
+        font-size: 15px;
+    } 
+    .top-menu li a { 
+        display: block; 
+        color: black; 
+        text-align: center; 
+        padding: 14px 10px; 
+    }
+    #button{
+        top: 1.6%;
+        z-index: 1000;
+        padding: 10px;
+        border-radius: 40%;
+        border: none;
+        font-size: 15px;
+        cursor: pointer;
+    }
+}
+

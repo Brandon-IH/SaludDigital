@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Servicios | Salud Digital</title>
+  <link rel="stylesheet" href="/static/css/servicios.css">
+</head>
+<body>
+    <!-- MENÚ LATERAL -->
+    <nav class="menu-lateral">
+        <a href="#medico">Médico</a>
+        <a href="#psicologico">Psicológico</a>
+        <a href="#nutricional">Nutricional</a>
+    </nav>
+
+    <!-- Botón para volver arriba -->
+    <button class="btn-arriba" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">↑</button>
+        <!-- Botón para volver a la pestaña de Inicio -->
+    <button class="btn-home" onclick="window.location.href='/inicio'">🏠</button>
+
+    <!-- SECCIÓN: Servicio Médico -->
+    <section id="medico" class="servicio servicio--medico reveal">
+        <div class="servicio__contenido">
+        <!-- Imagen destacada en la parte superior -->
+        <img src="static/img/servicio__medico.png" alt="Servicio Médico" class="servicio__imagen">
+        <div class="servicio__texto">
+            <h2 class="servicio__titulo">Servicio Médico</h2>
+            <p class="servicio__descripcion">
+            Atención médica general para estudiantes y personal universitario. Consulta preventiva, curaciones y orientación médica.
+            </p>
+            <!-- Carrusel horizontal de subservicios -->
+            <div class="servicio__grid">
+            <div class="servicio__card">
+                <img src="static/img/consulta_medica.jpg" alt="Consultas Generales">
+                <h3>Consultas</h3>
+                <p>Consultas generales y especializadas.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/urgencia_medica.jpg" alt="Urgencias">
+                <h3>Urgencias</h3>
+                <p>Atención inmediata en casos de emergencia.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/vacunacion_medica.jpg" alt="Vacunación">
+                <h3>Vacunación</h3>
+                <p>Programa de inmunización y actualización de vacunas.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/analisis_clinico.jpg" alt="Análisis Clínicos">
+                <h3>Análisis Clínicos</h3>
+                <p>Exámenes de laboratorio para evaluar tu salud.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/consulta_virtual.jpg" alt="Telemedicina">
+                <h3>Telemedicina</h3>
+                <p>Consultas médicas remotas de forma segura.</p>
+            </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: Servicio Psicológico -->
+    <section id="psicologico" class="servicio servicio--psicologico reveal">
+        <div class="servicio__contenido">
+        <img src="static/img/servicio__psicologico.jpg" alt="Servicio Psicológico" class="servicio__imagen">
+        <div class="servicio__texto">
+            <h2 class="servicio__titulo">Servicio Psicológico</h2>
+            <p class="servicio__descripcion">
+            Espacio de apoyo emocional, terapia breve y canalización profesional para estudiantes con problemas personales o académicos.
+            </p>
+            <div class="servicio__grid">
+            <div class="servicio__card">
+                <img src="static/img/terapia_individual.jpg" alt="Terapia Individual">
+                <h3>Terapia Individual</h3>
+                <p>Sesiones privadas para abordar tus inquietudes.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/terapia_grupal.jpg" alt="Terapia Grupal">
+                <h3>Terapia Grupal</h3>
+                <p>Espacios para compartir experiencias y apoyo mutuo.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/taller_psicologico.png" alt="Talleres Psicológicos">
+                <h3>Talleres</h3>
+                <p>Actividades para el bienestar y manejo del estrés.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/evaluacion_psicologica.jpg" alt="Evaluaciones">
+                <h3>Evaluaciones</h3>
+                <p>Diagnósticos para comprender tu estado emocional.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/orientacion_psicologica.png" alt="Orientación">
+                <h3>Orientación</h3>
+                <p>Asesoramiento integral para afrontar desafíos.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/intervencion_psicologica.jpg" alt="Intervención">
+                <h3>Intervención</h3>
+                <p>Soporte inmediato durante crisis emocionales.</p>
+            </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: Servicio Nutricional -->
+    <section id="nutricional" class="servicio servicio--nutricional reveal">
+        <div class="servicio__contenido">
+        <img src="static/img/servcio_nutricional.png" alt="Servicio Nutricional" class="servicio__imagen">
+        <div class="servicio__texto">
+            <h2 class="servicio__titulo">Servicio Nutricional</h2>
+            <p class="servicio__descripcion">
+            Planes alimenticios personalizados, orientación sobre hábitos saludables y seguimiento por parte de profesionales en nutrición.
+            </p>
+            <div class="servicio__grid">
+            <div class="servicio__card">
+                <img src="static/img/consulta_nutricional.jpg" alt="Consulta Nutricional">
+                <h3>Consulta</h3>
+                <p>Asesoría para optimizar tus hábitos alimenticios.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/plan_alimenticio.jpg" alt="Plan Alimenticio">
+                <h3>Plan Alimenticio</h3>
+                <p>Planes adaptados a tus necesidades y gustos.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/CONTROL-DE-PESO.png" alt="Control de Peso">
+                <h3>Control de Peso</h3>
+                <p>Seguimiento profesional para alcanzar tus metas.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/suplementacion.png" alt="Suplementación">
+                <h3>Suplementación</h3>
+                <p>Recomendaciones para complementar tu nutrición.</p>
+            </div>
+            <div class="servicio__card">
+                <img src="static/img/deportes.jpg" alt="Talleres Nutricionales">
+                <h3>Talleres</h3>
+                <p>Sesiones interactivas para promover un estilo de vida saludable.</p>
+            </div>
+            </div>
+        </div>
+        </div>
+  </section>
+
+  <script src="/static/js/servicios.js" defer></script>
+</body>
+</html>

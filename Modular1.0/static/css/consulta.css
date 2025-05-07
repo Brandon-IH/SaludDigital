@@ -1,0 +1,247 @@
+/* Estilo General de la Sección */
+.consulta-general {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Título Principal */
+.consulta-general h1 {
+    font-size: 2.4rem;
+    color: #007bff;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Diseño en Mosaico */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Tarjetas */
+.tarjeta {
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.tarjeta:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background: #ffffff;
+}
+
+/* Íconos en las Tarjetas */
+.tarjeta h2 {
+    font-size: 1.5rem;
+    color: #0056b3;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e3f2fd;
+    padding-bottom: 5px;
+}
+
+.tarjeta p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Listas */
+.tarjeta ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+.tarjeta ul li {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.6;
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 10px;
+}
+
+.tarjeta ul li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Botón */
+.boton-agendar {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+    border-radius: 5px;
+    margin-top: 20px;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.boton-agendar:hover {
+    background: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Estilo de los formularios de edición */
+.formulario-edicion {
+    display: none; /* Oculto por defecto */
+    opacity: 1;
+    transform: translateY(0);
+    flex-direction: column;
+    gap: 10px;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Campos de entrada */
+.formulario-edicion input,
+.formulario-edicion textarea {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+/* Efectos al enfocar */
+.formulario-edicion input:focus,
+.formulario-edicion textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+
+/* Estilo general para todos los botones */
+.btn {
+    font-size: 14px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Estilo más elegante y discreto para los botones */
+.tarjeta button {
+    font-size: 14px; /* Tamaño compacto */
+    padding: 5px 10px; /* Ajuste equilibrado */
+    background: none; /* Sin fondo llamativo */
+    border: 1px solid transparent; /* Bordes invisibles por defecto */
+    cursor: pointer;
+    transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+.tarjeta button:hover {
+    background: rgba(0, 123, 255, 0.1); /* Fondo tenue al pasar el mouse */
+    border-color: rgba(0, 123, 255, 0.3); /* Bordes tenues al pasar el mouse */
+}
+
+/* Botón Editar - tono refinado */
+.tarjeta .editar {
+    color: #2e7d32; /* Verde oscuro sutil */
+}
+
+.tarjeta .editar:hover {
+    color: #1b5e20; /* Verde más profundo */
+    border-color: #1b5e20; /* Aparece un borde tenue */
+}
+
+/* Botón Eliminar - sutil pero claro */
+.tarjeta .eliminar {
+    color: #b71c1c; /* Rojo oscuro suave */
+}
+
+.tarjeta .eliminar:hover {
+    color: #7f0000; /* Rojo más profundo */
+    border-color: #7f0000; /* Aparece un borde tenue */
+}
+
+/* Estilo del botón Agregar Nuevo Servicio */
+.boton-agregar {
+    font-size: 12px;
+    padding: 8px 14px;
+    background: #007bff; /* Azul profesional */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
+    margin-top: 2%;
+}
+
+/* Efecto al pasar el mouse */
+.boton-agregar:hover {
+    background: #0056b3; /* Azul más oscuro */
+    transform: scale(1.02); /* Ligero efecto de expansión */
+}
+
+.formulario-edicion button{
+    font-size: 12px;
+    padding: 8px 14px;
+    background: #007bff; /* Azul profesional */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s ease-in-out, transform 0.2s ease-in-out;
+    margin-top: 5px;
+}
+
+.formulario-edicion button:hover {
+    background: #0056b3; /* Azul más oscuro */
+    transform: scale(1.02); /* Ligero efecto de expansión */
+}
+
+
+
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .boton-agregar {
+        font-size: 11px;
+        padding: 6px 12px;
+    }
+}

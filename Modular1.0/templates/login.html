@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="description" content="Sistema de gestión de usuarios y roles para la Universidad de Guadalajara.">
+  <title>Login</title>
+  <link rel="stylesheet" href="/static/css/login.css"> <!-- Tu archivo CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> <!-- Iconos -->
+</head>
+<body>
+  <main>
+    <section class="section-img">
+      <img src="https://comsoc.udg.mx/sites/default/files/udg-fondos-zoom-cucei.jpg" alt="Logo UPS">
+    </section>
+
+    <section class="section-login">
+      <div class="title-login">
+        <h2>Admin Login</h2>
+      </div>
+
+      <div class="credentials">
+        <form method="POST" action="{{ url_for('login') }}">
+          <input type="text" name="username" placeholder="Nombre de usuario" required>
+          <input type="password" id="password" name="password" placeholder="Contraseña" required>
+
+          <!-- Checkbox para mostrar contraseña -->
+          <div class="show-password">
+            <input type="checkbox" id="toggle-password" onclick="togglePassword()">
+            <label for="toggle-password">Mostrar contraseña</label>
+          </div>
+
+          <button type="submit">Login</button>
+        </form>
+      </div>
+
+      <div id="login-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert {{ category }}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById("password");
+      const toggle = document.getElementById("toggle-password");
+      passwordInput.type = toggle.checked ? "text" : "password";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de gestión de citas para la Universidad de Guadalajara.">
+    <title>Gestión de Citas</title>
+    <link rel="stylesheet" href="/static/css/citas.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/citas.js" defer></script> <!-- Corrección aquí: cerrar el tag de script correctamente -->
+</head>
+<body>
+    <!-- Menú Derecho -->
+    <aside class="side-menu"> 
+        <img class="logo_cucei" src="/static/img/cucei.png" alt="Logo de CUCEI"> <!-- Logo de CUCEI -->
+        <hr> <!-- Línea horizontal -->
+        <ul>
+            <li><a class="menu-item" id="admin" href="/"><img class="logo" src="/static/img/pagina-principal.png" alt="">Dashboard</a></li>
+            <li><a class="menu-item" id="salud" href="/consulta"><img class="logo" src="/static/img/salud.png" alt="">Enfermería</a></li>
+            <li><a class="menu-item" id="nutriologia" href="/nutriologia"><img class="logo" src="/static/img/dieta.png" alt="">Nutriología</a></li>
+            <li><a class="menu-item" id="psicologia" href="/psicologia"><img class="logo" src="/static/img/salud-mental.png" alt="">Psicología</a></li>
+            <li><a class="menu-item" id="citas" href="/citas"><img class="logo" src="/static/img/plazo.png" alt="">Citas</a></li>
+            <li><a class="menu-item" id="profile" href="/profile"><img class="logo" src="/static/img/usuario.png" alt="">Perfil</a></li>
+            <li><a class="menu-item" id="logout" href="/logout"><img class="logo" src="/static/img/cerrar-sesion.png" alt="">Log out</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <nav class="top-menu"> 
+            <button id="button" class="toggle-menu" onclick="toggleSideMenu()">☰</button>
+            <ul>
+                <li><a href="/inicio">Inicio</a></li> <!-- Enlace a la página de inicio -->
+                <li><a href="/servicios">Servicios</a></li> <!-- Enlace a la sección de servicios -->
+            </ul>
+            
+        </nav>
+        <div class="encabezado">
+            <h1>Gestión de Citas</h1>
+        </div>
+        <!-- Formulario para añadir/modificar citas -->
+        <form id="citasForm">
+            <input type="hidden" id="id" name="id">
+            
+            <label for="nombre_alumno">Nombre del Alumno:</label>
+            <input type="text" id="nombre_alumno" name="nombre_alumno" required>
+
+            <label for="apellidos">Apellidos del Alumno:</label>
+            <input type="text" id="apellidos" name="apellidos" required>
+            
+            <label for="correo_alumno">Correo del Alumno:</label>
+            <input type="email" id="correo_alumno" name="correo_alumno" required>
+
+            <label for="codigo">Codigo del Alumno:</label>
+            <input type="number" id="codigo" name="codigo" required>
+            
+            <label for="departamento">Departamento:</label>
+            <select id="departamento" name="departamento" required>
+                <option value="Psicologia">Psicologia</option>
+                <option value="Nutricion">Nutricion</option>
+                <option value="Consulta General">Consulta general</option>
+            </select>
+
+            <label for="hora">Hora:</label>
+            <input type="time" id="hora" name="hora" required>
+            
+            <label for="dia">Día:</label>
+            <input type="date" id="dia" name="dia" required>
+            
+            <label for="estatus">Estatus:</label>
+            <select id="estatus" name="estatus" required>
+                <option value="pendiente">Pendiente</option>
+                <option value="completada">Completada</option>
+                <option value="cancelada">Cancelada</option>
+            </select>
+            
+            <button class="button" type="submit">Guardar</button>
+        
+        </form>
+
+        <!-- Tabla para mostrar citas -->
+        <div class="table_container">
+            <table id="citasTable">
+                <thead>
+                    <tr>
+                        <th>Nombre del Alumno</th>
+                        <th>Apellidos del Alumno</th>
+                        <th>Correo del Alumno</th>
+                        <th>Código del Alumno</th>
+                        <th>Departamento</th>
+                        <th>Hora</th>
+                        <th>Día</th>
+                        <th>Estatus</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se agregarán dinámicamente las citas -->
+                </tbody>
+            </table>
+        </div>
+
+        
+    </main>
+    <footer>
+        <div class="copyright">
+            <div class="text_copyright">
+                <p>© 2025 Universidad de Guadalajara - Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI)</p>
+            </div>
+        </div>
+    </footer>
+    
+    <div id="message-box" class="message-box"></div>
+
+</body>
+</html>

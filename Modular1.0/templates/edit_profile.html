@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editar Perfil</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/profile.css">
+  <script src="static/js/consulta.js" defer></script>
+
+</head>
+<body>
+    <!-- Menú Derecho -->
+    <aside class="side-menu"> 
+        <img class="logo_cucei" src="/static/img/cucei.png" alt="Logo de CUCEI"> <!-- Logo de CUCEI -->
+        <hr> <!-- Línea horizontal -->
+        <ul>
+            <li><a class="menu-item" id="admin" href="/"><img class="logo" src="/static/img/pagina-principal.png" alt="">Dashboard</a></li>
+            <li><a class="menu-item" id="salud" href="/consulta"><img class="logo" src="/static/img/salud.png" alt="">Enfermería</a></li>
+            <li><a class="menu-item" id="nutriologia" href="/nutriologia"><img class="logo" src="/static/img/dieta.png" alt="">Nutriología</a></li>
+            <li><a class="menu-item" id="psicologia" href="/psicologia"><img class="logo" src="/static/img/salud-mental.png" alt="">Psicología</a></li>
+            <li><a class="menu-item" id="citas" href="/citas"><img class="logo" src="/static/img/plazo.png" alt="">Citas</a></li>
+            <li><a class="menu-item" id="profile" href="/profile"><img class="logo" src="/static/img/usuario.png" alt="">Perfil</a></li>
+            <li><a class="menu-item" id="logout" href="/logout"><img class="logo" src="/static/img/cerrar-sesion.png" alt="">Log out</a></li>
+        </ul>
+    </aside>
+    <main> 
+        <nav class="top-menu"> 
+            <button id="button" class="toggle-menu" onclick="toggleSideMenu()">☰</button>
+            <ul>
+                <li><a href="/inicio">Inicio</a></li> <!-- Enlace a la página de inicio -->
+                <li><a href="/servicios">Servicios</a></li> <!-- Enlace a la sección de servicios -->
+            </ul>
+        </nav>
+
+        <section class="content">
+            <div class="encabezado">
+                <h2>Editar Perfil</h2>
+            </div>
+            <div class="conteiner-formulario">
+                <form action="{{ url_for('update_profile') }}" method="POST" class="edit-form">
+                <label for="email">Correo electrónico:</label>
+                <input type="email" name="email" id="email" value="{{ user.email or '' }}" required>
+        
+                <label for="full_name">Nombre completo:</label>
+                <input type="text" name="full_name" id="full_name" value="{{ user.full_name or '' }}" required>
+        
+                <label for="birthdate">Fecha de nacimiento:</label>
+                <input type="date" name="birthdate" id="birthdate" value="{{ user.birthdate or '' }}">
+        
+                <label for="phone">Teléfono:</label>
+                <input type="tel" name="phone" id="phone" value="{{ user.phone or '' }}">
+        
+                <label for="area">Área:</label>
+                <select name="area" id="area">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Psicología" {% if user.area == 'Psicología' %}selected{% endif %}>Psicología</option>
+                    <option value="Nutrición" {% if user.area == 'Nutrición' %}selected{% endif %}>Nutrición</option>
+                    <option value="Consulta general" {% if user.area == 'Consulta General' %}selected{% endif %}>Consulta General</option>
+                </select>
+        
+                <div class="botones-formulario">
+                    <button type="submit">Guardar cambios</button>
+                    <a href="{{ url_for('profile') }}" class="cancelar">Cancelar</a>
+                </div>
+                </form>
+            </div>
+        </section>
+        
+    </main>
+
+</body>
+</html>

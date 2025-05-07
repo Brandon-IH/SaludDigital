@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <title>Perfil de Usuario</title>
+  <link rel="stylesheet" href="/static/css/profile.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="/static/js/marcador.js" defer></script>
+</head>
+<body>
+  <!-- Menú Derecho -->
+  <aside class="side-menu"> 
+    <img class="logo_cucei" src="/static/img/cucei.png" alt="Logo de CUCEI"> <!-- Logo de CUCEI -->
+    <hr> <!-- Línea horizontal -->
+    <ul>
+      <li><a class="menu-item" id="admin" href="/"><img class="logo" src="/static/img/pagina-principal.png" alt="">Dashboard</a></li>
+      <li><a class="menu-item" id="salud" href="/consulta"><img class="logo" src="/static/img/salud.png" alt="">Enfermería</a></li>
+      <li><a class="menu-item" id="nutriologia" href="/nutriologia"><img class="logo" src="/static/img/dieta.png" alt="">Nutriología</a></li>
+      <li><a class="menu-item" id="psicologia" href="/psicologia"><img class="logo" src="/static/img/salud-mental.png" alt="">Psicología</a></li>
+      <li><a class="menu-item" id="citas" href="/citas"><img class="logo" src="/static/img/plazo.png" alt="">Citas</a></li>
+      <li><a class="menu-item" id="profile" href="/profile"><img class="logo" src="/static/img/usuario.png" alt="">Perfil</a></li>
+      <li><a class="menu-item" id="logout" href="/logout"><img class="logo" src="/static/img/cerrar-sesion.png" alt="">Log out</a></li>
+    </ul>
+  </aside>
+  <main>
+    <nav class="top-menu"> 
+        <button id="button" class="toggle-menu" onclick="toggleSideMenu()">☰</button>
+        <ul>
+          <li><a href="/inicio">Inicio</a></li> <!-- Enlace a la página de inicio -->
+          <li><a href="/servicios">Servicios</a></li> <!-- Enlace a la sección de servicios -->
+        </ul>
+    </nav>
+
+    <section class="content">
+        <div class="encabezado">
+            <h2>Perfil de Usuario</h2>
+            <h2>¡Bienvenido {{ user.username }}!</h1>
+        </div>
+
+        <div class="data">
+          <p><strong>Nombre de Usuario:</strong> {{ user.username }}</p>
+          <p><strong>ID de Usuario:</strong> {{ user.id }}</p>
+          <p><strong>Correo electrónico:</strong> {{ user.email or 'No registrado' }}</p>
+          <p><strong>Nombre completo:</strong> {{ user.full_name or 'No registrado' }}</p>
+          <p><strong>Fecha de nacimiento:</strong> {{ user.birthdate or 'No registrado' }}</p>
+          <p><strong>Teléfono:</strong> {{ user.phone or 'No registrado' }}</p>
+          <p><strong>Área Medica:</strong> {{ user.area or 'No registrado' }}</p>
+      </div>
+
+      
+      
+      
+
+      <div class="link">
+        <a href="{{ url_for('update_password') }}">Actualizar Contraseña</a>
+      </div>
+      
+      <!-- Botón para editar o agregar datos -->
+      <div class="edit-profile">
+          <a href="{{ url_for('edit_profile') }}" class="btn-editar">Editar Perfil</a>
+      </div>
+      
+
+    </section>
+    
+  </main>
+  
+</body>
+</html>

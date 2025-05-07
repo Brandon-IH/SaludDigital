@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salud Digital</title>
+    <!-- FAVICON -->
+    <!-- CSS -->
+   
+    <link rel="stylesheet" href="/static/css/inicio.css">
+  
+</head>
+<script>
+    function revealOnScroll() {
+        const reveals = document.querySelectorAll('.reveal, .slide-left, .slide-right');
+        for (let i = 0; i < reveals.length; i++) {
+            const windowHeight = window.innerHeight;
+            const elementTop = reveals[i].getBoundingClientRect().top;
+            const elementVisible = 150;
+
+            if (elementTop < windowHeight - elementVisible) {
+                reveals[i].classList.add('active');
+            }
+        }
+    }
+
+    window.addEventListener('scroll', revealOnScroll);
+    window.addEventListener('load', revealOnScroll);
+</script>
+<body>
+    <!-- NAV -->
+    <nav class="nav">
+
+        <div class="nav__banner">
+
+            <p class="banner__titulo">Universidad de Guadalajara</p>
+
+        </div>
+
+        <div class="nav__enlaces">
+
+            <a href="/"><img class="enlaces__logo" src="/static/img/salud_digital_logo.png" alt="Salud Digital"></a>
+
+        </div>
+
+    </nav>
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero__presentacion reveal">
+            <h1 class="presentacion__titulo">Salud Digital</h1>
+            <p class="presentacion__descripcion">
+                Bienvenido a Salud Digital, tu plataforma para gestionar servicios médicos de manera eficiente y accesible.<br>
+                Aquí podrás agendar citas, acceder a información sobre nuestros servicios y dejarnos tus comentarios.
+                <br>Nuestro objetivo es brindarte una atención de calidad y mejorar tu experiencia con nosotros.
+                <br>
+                
+            <button class="presentacion__boton" onclick="desplazar()">Agendar cita</button>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="main">
+        <!-- SERVICIOS -->
+        <div class="servicios reveal">
+
+            <h2 class="servicios__titulo">Servicios</h2>
+
+            <div class="servicios__contenido">
+
+                <a href="/servicios#medico" class="contenido slide-left">
+                    <img class="contenido__imagen" src="/static/img/servicio_medico.png" alt="Servicio Medico">
+                    <h3 class="contenido__titulo">Servicio médico</h3>
+                </a>
+              
+                <a href="/servicios#psicologico" class="contenido reveal">
+                    <img class="contenido__imagen" src="/static/img/servicio_psicologico.png" alt="Servicio Psicologico">
+                    <h3 class="contenido__titulo">Servicio psicológico</h3>
+                </a>
+              
+                <a href="/servicios#nutricional" class="contenido slide-right">
+                    <img class="contenido__imagen" src="/static/img/servicio_nutricional.png" alt="Servicio Nutricional">
+                    <h3 class="contenido__titulo">Servicio nutricional</h3>
+                </a>
+              
+              </div>
+              
+
+        </div>
+        <!-- INTRODUCCION -->
+        <div class="introduccion reveal">
+
+            <div class="introduccion__texto slide-left">
+                <h2 class="texto__titulo">Salud Digital</h2>
+                <p class="texto__parrafo">
+                    Salud Digital es una página web exclusiva para la gestión
+                    de los servicios médicos del centro universitario. A través del
+                    sistema, podemos agendar citas para el servicio que necesitemos, eligiendo
+                    el día y la hora de nuestra preferencia, excepto en
+                    casos de emergencia médica.
+                </p>
+            </div>
+
+            <div class="introduccion__imagen slide-right">
+                <img class="imagen__introduccion" src="/static/img/salud_digital_hero.jpg" alt="Salud Digital">
+            </div>
+
+        </div>
+        <!-- AGENDAR CITA -->
+        <div class="agendar-cita reveal" id="agendar-cita">
+
+            <h2 class="agendar-cita__titulo">Agendar cita</h2>
+
+            <form class="agendar-cita__formulario" action="">
+
+                <label class="formulario__titulo" for="nombre">Nombre</label>
+                <input class="formulario__campo" type="text" id="nombre" name="nombre">
+
+                <label class="formulario__titulo" for="apellidos">Apellidos</label>
+                <input class="formulario__campo" type="text" id="apellidos" name="apellidos">
+
+                <label class="formulario__titulo" for="codigo">Código</label>
+                <input class="formulario__campo" type="number" id="codigo" name="codigo">
+
+                <label class="formulario__titulo" for="correo_electronico">Correo electrónico</label>
+                <input class="formulario__campo" type="email" id="correo_electronico" name="correo_electronico">
+
+                <label class="formulario__titulo" for="telefono">Teléfono</label>
+                <input class="formulario__campo" type="tel" id="telefono" name="telefono">
+
+                <label class="formulario__titulo" for="servicio">Servicio</label>
+                <select class="formulario__campo" name="servicio" id="servicio">
+
+                    <option value="" disabled selected hidden>- Selecciona una opción -</option>
+                    <option value="servicio_medico">Servicio medico</option>
+                    <option value="servicio_psicologico">Servicio psicológico</option>
+                    <option value="servicio_nutrimental">Servicio nutrimental</option>
+
+                </select>
+
+                <label class="formulario__titulo" for="fecha">Fecha</label>
+                <input class="formulario__campo" type="date" id="fecha" name="fecha">
+
+                <label class="formulario__titulo" for="hora">Hora</label>
+                <input class="formulario__campo" type="time" id="hora" name="hora">
+
+                <input class="formulario__boton" type="submit" value="Agendar cita">
+
+            </form>
+
+        </div>
+        <!-- COMENTARIOS -->
+        <div class="comentarios reveal">
+            <h2 class="comentarios__titulo">Comentarios</h2>
+
+            <p class="comentarios__descripcion">
+                Déjanos tus comentarios sobre tu experiencia con el servicio. Tu opinión nos ayuda a mejorar.
+            </p>
+
+            <form class="comentarios__formulario" >
+                <textarea class="formulario__comentarios" name="comentarios" id="" placeholder="Escribe tu experiencia aquí..."></textarea>
+                <input class="formulario__boton" type="submit" value="Enviar">
+            </form>
+            
+        </div>
+
+
+    </main>
+    <!-- FOOTER -->
+    <footer class="footer">
+
+        <p class="footer__copyright">&copy; 2025 Salud Digital</p>
+
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script src="static/js/inicio.js" defer></script>
+</body>
+</html>

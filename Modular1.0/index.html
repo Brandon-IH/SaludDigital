@@ -1,0 +1,114 @@
+<!DOCTYPE html> <!-- Define el tipo de documento como HTML5 -->
+<html lang="en"> <!-- Define el lenguaje del documento como inglés -->
+<head>
+    <meta charset="UTF-8"> <!-- Define la codificación de caracteres a UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Hace la página responsiva en dispositivos móviles -->
+    <title>Admin - Servicios Médicos</title> <!-- Título de la página que aparece en la pestaña del navegador -->
+    <link rel="stylesheet" href="/static/css/style.css"> <!-- Vincula el archivo CSS para el estilo de la página -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"> <!-- Pre-conecta a Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin> <!-- Permite cargar fuentes desde Google Fonts con CORS -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet"> <!-- Carga una fuente desde Google Fonts -->
+    <script src="static/js/index.js" defer></script> <!-- Vincula el archivo JS para la funcionalidad de la página -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Carga la librería Chart.js para graficar -->
+
+</head>
+<body>
+    <!-- Menú Derecho -->
+    <aside class="side-menu"> 
+        <img class="logo_cucei" src="/static/img/cucei.png" alt="Logo de CUCEI"> <!-- Logo de CUCEI -->
+        <hr> <!-- Línea horizontal -->
+        <ul>
+            <li><a class="menu-item" id="admin" href="/"><img class="logo" src="/static/img/pagina-principal.png" alt="">Dashboard</a></li>
+            <li><a class="menu-item" id="salud" href="/consulta"><img class="logo" src="/static/img/salud.png" alt="">Enfermería</a></li>
+            <li><a class="menu-item" id="nutriologia" href="/nutriologia"><img class="logo" src="/static/img/dieta.png" alt="">Nutriología</a></li>
+            <li><a class="menu-item" id="psicologia" href="/psicologia"><img class="logo" src="/static/img/salud-mental.png" alt="">Psicología</a></li>
+            <li><a class="menu-item" id="citas" href="/citas"><img class="logo" src="/static/img/plazo.png" alt="">Citas</a></li>
+            <li><a class="menu-item" id="profile" href="/profile"><img class="logo" src="/static/img/usuario.png" alt="">Perfil</a></li>
+            <li><a class="menu-item" id="logout" href="/logout"><img class="logo" src="/static/img/cerrar-sesion.png" alt="">Log out</a></li>
+        </ul>
+    </aside>
+    <main>
+       
+        <nav class="top-menu"> 
+            <button id="button" class="toggle-menu" onclick="toggleSideMenu()">☰</button>
+            <ul>
+                <li><a href="/inicio">Inicio</a></li> <!-- Enlace a la página de inicio -->
+                <li><a href="/servicios">Servicios</a></li> <!-- Enlace a la sección de servicios -->
+            </ul>
+        </nav>
+
+        <!-- Indicador de disponibilidad de la enfermería -->
+        <div class="section_div">
+            <section>
+                <h1>Dashboard</h1> <!-- Título de la sección -->
+            </section>
+        </div>
+        
+        <section id="dashboard">
+            <div class="dashboard_section">
+                <img class="img_dashboard" src="/static/img/universidad (1).png" alt="Logo del departamento"> <!-- Imagen representativa del departamento -->
+                <p class="titulo_section_dashboard">Areas</p> <!-- Título de la sección -->
+                <p class="num_dashboard">3</p> <!-- Número de departamentos -->
+            </div>
+
+            <div class="dashboard_section">
+                <img class="img_dashboard" src="/static/img/paciente (1).png" alt="Logo del departamento">
+                <p class="titulo_section_dashboard">Estudiantes</p> <!-- Título de la sección -->
+                <p class="num_dashboard" id="total-alumnos">0</p> <!-- Número de estudiantes -->
+            </div>
+
+            <div class="dashboard_section">
+                <img class="img_dashboard" src="/static/img/retroalimentacion-positiva (1).png" alt="Logo del departamento">
+                <p class="titulo_section_dashboard">Comentarios</p> <!-- Título de la sección -->
+                <p class="num_dashboard" id="total-comments">0</p> <!-- Muestra el número total de comentarios -->
+            </div>
+
+            <div class="dashboard_section">
+                <img class="img_dashboard" src="/static/img/cita (1).png" alt="Logo del departamento">
+                <p class="titulo_section_dashboard">Citas</p>
+                <p class="num_dashboard" id="total-appointments">0</p>
+            </div>
+
+            <div class="dashboard_section">
+                <img class="img_dashboard" src="/static/img/marca-de-verificacion.png" alt="Logo del departamento">
+                <section id="availability">
+                    <p class="titulo_section_dashboard" id="status-text">Cargando estado...</p> <!-- Texto inicial de estado -->
+                    <div id="status">
+                        <span id="status-indicator"></span> <!-- Indicador de disponibilidad -->
+                    </div>
+                </section>
+            </div>
+
+        </section>
+
+         <!-- Contenedor de gráfica y citas -->
+        <div class="contenedor_grafica_citas">
+
+            <!-- Sección de Citas -->
+            <section class="citas">
+                <h2>Citas del Día</h2>
+                <ul id="lista-citas">
+                    <!-- Aquí se agregarán dinámicamente las citas o el mensaje de que no hay citas disponibles -->
+                </ul>
+            </section>
+
+            <!-- Gráfica de comentarios -->
+            <section class="contenedor_grafica">
+                <canvas id="commentsGraph"></canvas> <!--Área donde se dibujará la gráfica -->
+            </section>
+            
+        </div>
+
+
+        
+    </main>
+    <footer>
+        <div class="copyright">
+            <div class="text_copyright">
+                <p>© 2025 Universidad de Guadalajara - Centro Universitario de Ciencias Exactas e Ingenierías (CUCEI)</p>
+            </div>
+        </div>
+    </footer>
+    
+</body>
+</html>

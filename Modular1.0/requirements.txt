@@ -1,0 +1,24 @@
+# Web
+Flask==3.1.0
+Flask-SocketIO==5.5.1
+eventlet==0.39.0
+gunicorn==21.2.0
+websockets==14.2
+
+# Base de datos
+psycopg2-binary==2.9.10
+
+# Autenticación y seguridad
+Flask-Login==0.6.3
+Flask-Bcrypt==1.0.1
+
+# Correos electrónicos y logging
+python-dotenv==1.0.1
+
+# Procesamiento de datos y Machine Learning
+numpy==1.26.4
+pandas==2.2.3
+matplotlib==3.10.0
+scikit-learn==1.6.1
+tensorflow==2.19.0
+spacy==3.8.5

@@ -1,0 +1,201 @@
+/* Estilo general */
+
+
+h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.conteiner-formulario {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+/* Contenedor del perfil */
+.profile-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.profile-container p {
+    color: #666;
+    margin: 10px 0;
+}
+
+.profile-container a {
+    display: block;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.profile-container a:hover {
+    background-color: #0056b3;
+}
+
+.flashes {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.flashes li {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: #fff;
+    background-color: #f44336;
+}
+
+.flashes .success {
+    background-color: #4CAF50;
+}
+
+.flashes .danger {
+    background-color: #f44336;
+}
+.content{
+    padding: 3%;   
+}
+.encabezado{
+    background-color: white;
+    padding: 1%;
+    border-radius: 15px;
+}
+
+.data{
+    background-color: white;
+    padding: 1%;
+    border-radius: 15px;
+    margin-top: 2%;
+}
+
+.link{
+    background-color: white;
+    padding: 1%;
+    border-radius: 15px;
+    margin-top: 2%; 
+}
+a{
+    text-decoration: none;
+    color:#f44336;
+}
+
+.link:hover{
+    transform: translateY(-10px);
+    transition: transform .3s ease;
+    text-decoration: underline;
+}
+
+.edit-profile {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .btn-editar {
+    background-color: #0066cc;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-editar:hover {
+    background-color: #004999;
+  }
+
+  .edit-form {
+    min-width: 40%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+  }
+  
+  .edit-form label {
+    font-weight: bold;
+  }
+  
+  .edit-form input,
+  .edit-form select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  .botones-formulario {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .botones-formulario button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .botones-formulario .cancelar {
+    color: #dc3545;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 16px;
+  }
+
+  .citas {
+    margin-top: 30px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 12px;
+  }
+  
+  .citas h3 {
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .citas ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .citas li {
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-left: 4px solid #007bff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  
+/* Estilo responsivo */
+@media (max-width: 600px) {
+    .profile-container {
+        padding: 15px;
+    }
+
+    .profile-container a {
+        padding: 8px;
+    }
+}

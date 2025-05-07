@@ -1,0 +1,195 @@
+/* Reset y box-sizing global */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilo general */
+body {
+  background: linear-gradient(to bottom, #b49999, #c5baae, #f3f3f3);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(240, 232, 232);
+  font-family: Arial, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ondas superiores */
+.wave-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%231A237E" fill-opacity="0.5" d="M0,160L48,149.3C96,139,192,117,288,122.7C384,128,480,160,576,149.3C672,139,768,85,864,85.3C960,85,1056,139,1152,144C1248,149,1344,107,1392,85.3L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>');
+  background-size: cover;
+}
+
+/* Ondas inferiores */
+.wave-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%230D47A1" fill-opacity="0.5" d="M0,128L48,122.7C96,117,192,107,288,133.3C384,160,480,224,576,218.7C672,213,768,139,864,128C960,117,1056,171,1152,176C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+  background-size: cover;
+}
+
+main {
+  width: 90%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: row;
+  box-shadow: 0 6px 19px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  border-radius: 20px;
+  background: white;
+}
+
+/* Imagen */
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.section-img {
+  width: 55%;
+}
+
+/* Login */
+.section-login {
+  padding: 4%;
+  width: 45%;
+  background-color: white;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Títulos */
+.title-login {
+  padding-top: 20px;
+  text-align: center;
+}
+
+h2 {
+  color: #006A60;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 32px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Formulario */
+form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Mostrar contraseña */
+.show-password {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Botón */
+button {
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Alertas */
+.flashes {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.flashes li {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.alert.info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.alert.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.alert.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Responsividad para móviles */
+@media (max-width: 768px) {
+  main {
+    flex-direction: column;
+    width: 95%;
+  }
+
+  .section-img {
+    width: 100%;
+    height: 200px;
+  }
+
+  .section-login {
+    width: 100%;
+    padding: 20px;
+    border-radius: 0 0 20px 20px;
+  }
+
+  img {
+    border-radius: 20px 20px 0 0;
+  }
+}
