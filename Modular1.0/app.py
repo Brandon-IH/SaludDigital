@@ -36,7 +36,7 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # Fallback en caso de que estés trabajando localmente
 if not DATABASE_URL:
     logger.warning("⚠️ DATABASE_URL no encontrada en variables de entorno, usando URL local")
-    DATABASE_URL = "postgresql://usuario:contraseña@host:puerto/nombre_basedatos"
+    DATABASE_URL = "postgresql://postgres:DkpudEUPuVLMNzFbqzjfQoDVAPJwaKhH@postgres.railway.internal:5432/railway"
 
 try:
     conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
