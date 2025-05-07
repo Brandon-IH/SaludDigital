@@ -46,7 +46,7 @@ try:
     logger.info(f"📄 Tablas en la base de datos: {tables}")
 
 except psycopg2.OperationalError as e:
-    logger.error(f"❌ Error de conexión a PostgreSQL: {e}")
+    logger.error(f"❌ Error de conexión a PostgreSQL no se que esta pasando: {e}")
     exit(1)
 
 except Exception as e:
