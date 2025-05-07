@@ -668,17 +668,19 @@ async def notify_clients_new_comment():
     # Enviar los datos a todos los clientes conectados
     for client in clients:
         await client.send(json.dumps(response_data))
-# Iniciar el servidor WebSocket y Flask en paralelo
-async def start_server():
-    server = await serve(handle_connection, "0.0.0.0", 8765)  # Permite conexiones externas
-    print("Servidor WebSocket iniciado en ws://0.0.0.0:8765")
+async def start_websocket():
+    server = await serve(handle_connection, "0.0.0.0", 8765)  # WebSocket en 8765
+    print("✅ WebSocket corriendo en ws://0.0.0.0:8765")
     await server.wait_closed()
 
-# Ejecutar el servidor Flask y WebSocket
+def websocket_thread():
+    asyncio.run(start_websocket())  # Inicia WebSocket de forma bloqueante
+
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5000))  # Usa el puerto asignado por Railway
-    asyncio.create_task(start_server())  # Inicia WebSocket en segundo plano
-    app.run(host="0.0.0.0", port=port)  # Flask usa el puerto dinámico
+    port = int(os.getenv("PORT", 5000))  # Flask en 5000
+    threading.Thread(target=websocket_thread).start()  # WebSocket en hilo separado
+    app.run(host="0.0.0.0", port=port)
+
 
 
 # Cerrar la conexión a la base de datos al finalizar
