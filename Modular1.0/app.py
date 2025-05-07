@@ -30,12 +30,8 @@ from email.message import EmailMessage
 logging.basicConfig(level=logging.INFO)  # Configura el nivel de log a INFO
 logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo actual
 
-# Obtener la URL de la base de datos desde Railway
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if not DATABASE_URL:
-    logger.error("❌ Error: La variable DATABASE_URL no está definida en Railway.")
-    exit(1)  # Termina la ejecución si la variable de entorno no está configurada
+# Definir manualmente la URL de la base de datos
+DATABASE_URL = "postgresql://postgres:DkpudEUPuVLMNzFbqzjfQoDVAPJwaKhH@postgres.railway.internal:5432/railway"
 
 try:
     # Conectar a PostgreSQL con timeout para evitar bloqueos
@@ -62,7 +58,6 @@ finally:
         cur.close()
         conn.close()
         logger.info("🔄 Conexión cerrada correctamente")
-
 
 
 def enviar_correo_bienvenida(destinatario, nombre_usuario, password):
