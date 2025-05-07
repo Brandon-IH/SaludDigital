@@ -672,7 +672,7 @@ def websocket_thread():
     asyncio.run(start_websocket())  # Inicia WebSocket de forma bloqueante
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5000))  # Flask en 5000
+    port = int(os.getenv("PORT", 8080))  # Flask en 8080
     threading.Thread(target=websocket_thread).start()  # WebSocket en hilo separado
     app.run(host="0.0.0.0", port=port)
 
