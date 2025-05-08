@@ -372,21 +372,25 @@ def register():
         password = request.form["password"]
         email = request.form["email"]
 
+        conn = connection_pool.getconn()
         try:
-            validate_email(email)  # Validar el email
-            validate_password(password)  # Validar la contraseña
+            # Validaciones
+            try:
+                validate_email(email)
+                validate_password(password)
+            except ValueError as val_err:
+                flash(str(val_err), "danger")
+                return redirect(url_for("register"))
 
-            # Verificar si el nombre de usuario ya existe
+            # Verificar si el usuario ya existe
             with conn.cursor() as cur:
                 cur.execute("SELECT id FROM usuarios WHERE username = %s", (username,))
-                existing_user = cur.fetchone()
-                if existing_user:
+                if cur.fetchone():
                     flash("El nombre de usuario ya está en uso, elige otro.", "danger")
                     return redirect(url_for("register"))
 
+            # Insertar nuevo usuario
             hashed_password = generate_password_hash(password)
-
-            # Insertar el nuevo usuario
             with conn.cursor() as cur:
                 cur.execute(
                     "INSERT INTO usuarios (username, password, email) VALUES (%s, %s, %s) RETURNING id",
@@ -396,16 +400,19 @@ def register():
                 conn.commit()
 
             enviar_correo_bienvenida(destinatario=email, nombre_usuario=username, password=password)
-
             flash("Registro exitoso", "success")
             return redirect(url_for("login"))
 
-        except psycopg2.DatabaseError as db_err:
+        except psycopg2.DatabaseError:
             conn.rollback()
             flash("Error de base de datos", "danger")
             return redirect(url_for("register"))
 
+        finally:
+            connection_pool.putconn(conn)
+
     return render_template("register.html")
+
 
 
 @app.route('/update_profile', methods=['POST'])
@@ -416,6 +423,8 @@ def update_profile():
     birthdate = request.form.get('birthdate') or None
     phone = request.form.get('phone')
     area = request.form.get('area')
+
+    conn = connection_pool.getconn()  # Obtener conexión desde el pool
 
     try:
         with conn.cursor() as cur:
@@ -430,8 +439,11 @@ def update_profile():
         conn.rollback()
         flash('Error al actualizar el perfil.', 'danger')
         print(e)
+    finally:
+        connection_pool.putconn(conn)  # Devolver la conexión al pool
 
     return redirect(url_for('profile'))
+
 
 @app.route('/')
 @login_required
@@ -611,6 +623,11 @@ def update_password():
         current_password = request.form['current_password']
         new_password = request.form['new_password']
 
+        # Validar longitud mínima de la nueva contraseña
+        if len(new_password) < 8:
+            flash('La nueva contraseña debe tener al menos 8 caracteres.', 'warning')
+            return redirect(url_for('update_password'))
+
         user = User.get_by_id(current_user.id)
 
         if user and check_password_hash(user.password, current_password):
@@ -619,9 +636,12 @@ def update_password():
             conn = connection_pool.getconn()
             try:
                 with conn.cursor() as cur:
-                    cur.execute("UPDATE usuarios SET password = %s WHERE id = %s", (hashed_password, user.id))
+                    cur.execute(
+                        "UPDATE usuarios SET password = %s WHERE id = %s",
+                        (hashed_password, user.id)
+                    )
                     conn.commit()
-                
+
                 flash('Contraseña actualizada exitosamente', 'success')
                 return redirect(url_for('serve_index'))
 
@@ -637,6 +657,7 @@ def update_password():
         flash('Contraseña actual incorrecta', 'danger')
 
     return render_template('update_password.html')
+
 
 
 @app.route('/profile_edit', methods=['GET'])
@@ -733,16 +754,15 @@ def actualizar_citas_periodicamente(intervalo):
 
 def update_citas_vencidas():
     try:
-        now = datetime.now().time()
-        today = datetime.now().date()
+        now = datetime.now()
 
         conn = connection_pool.getconn()
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE citas 
                 SET estatus = 'completada' 
-                WHERE hora < %s AND dia <= %s AND estatus = 'pendiente'
-            """, (now, today))
+                WHERE (dia + hora) < %s AND estatus = 'pendiente'
+            """, (now,))
             conn.commit()
 
         logger.info("✅ Citas vencidas actualizadas a 'completada'")
@@ -752,6 +772,7 @@ def update_citas_vencidas():
         logger.error(f"❌ Error al actualizar citas vencidas: {e}")
     finally:
         connection_pool.putconn(conn)
+
 
 
 def get_user_appointments(user_id):
@@ -774,27 +795,31 @@ def agregar_comentario():
     data = request.json
     comentario = data.get('comentario')
 
-    if comentario:
-        try:
-            with conn.cursor() as cur:
-                cur.execute("INSERT INTO comentarios (comentario) VALUES (%s)", (comentario,))
-                conn.commit()
-
-            # Verificar que el archivo del proceso existe antes de ejecutarlo
-            script_path = "D:/Brandon/Modular1.0/traductor.py"
-            if os.path.exists(script_path):
-                subprocess.Popen(["python", script_path])
-            else:
-                logger.error(f"❌ El archivo '{script_path}' no existe.")
-
-            return jsonify({"message": "Comentario recibido y procesado"}), 200
-        except psycopg2.DatabaseError as e:
-            conn.rollback()
-            logger.error(f"❌ Error al agregar comentario: {e}")
-            return jsonify({"error": "Error al agregar comentario"}), 500
-    else:
+    if not comentario:
         return jsonify({"error": "Comentario no proporcionado"}), 400
 
+    conn = connection_pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("INSERT INTO comentarios (comentario) VALUES (%s)", (comentario,))
+            conn.commit()
+
+        # Ejecutar el script traductor si existe
+        script_path = "D:/Brandon/Modular1.0/traductor.py"
+        if os.path.exists(script_path):
+            subprocess.Popen(["python", script_path])
+        else:
+            logger.error(f"❌ El archivo '{script_path}' no existe.")
+
+        return jsonify({"message": "Comentario recibido y procesado"}), 200
+
+    except psycopg2.DatabaseError as e:
+        conn.rollback()
+        logger.error(f"❌ Error al agregar comentario: {e}")
+        return jsonify({"error": "Error al agregar comentario"}), 500
+
+    finally:
+        connection_pool.putconn(conn)
 
 
 async def enviar_a_clientes(msg):
