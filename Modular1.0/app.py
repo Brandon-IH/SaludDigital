@@ -532,8 +532,11 @@ def get_citas_data():
 
         citas = []
         for row in rows:
-            hora = row[6] if isinstance(row[6], datetime) else datetime.strptime(row[6], '%H:%M:%S').time()
-            dia = row[7] if isinstance(row[7], datetime) else datetime.strptime(row[7], '%Y-%m-%d').date()
+            # Si la hora es un objeto datetime.time, no se necesita convertir, solo formatear
+            hora = row[6] if isinstance(row[6], datetime.time) else datetime.strptime(row[6], '%H:%M:%S').time()
+
+            # Si el día es un objeto datetime.date, no se necesita convertir, solo formatear
+            dia = row[7] if isinstance(row[7], datetime.date) else datetime.strptime(row[7], '%Y-%m-%d').date()
 
             citas.append({
                 'id': row[0],
@@ -542,8 +545,8 @@ def get_citas_data():
                 'correo_alumno': row[3],
                 'codigo': row[4],
                 'departamento': row[5],
-                'hora': hora.strftime('%H:%M'),
-                'dia': dia.strftime('%Y-%m-%d'),
+                'hora': hora.strftime('%H:%M'),  # Formatea la hora a 'HH:MM'
+                'dia': dia.strftime('%Y-%m-%d'),  # Formatea el día a 'YYYY-MM-DD'
                 'estatus': row[8]
             })
 
@@ -554,6 +557,7 @@ def get_citas_data():
         return jsonify({"error": "Error al obtener las citas"}), 500
     finally:
         connection_pool.putconn(conn)
+
 
 
 @app.route('/update_password', methods=['GET', 'POST'])
