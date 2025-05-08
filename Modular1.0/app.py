@@ -105,7 +105,7 @@ def validate_password(password):
     return True
 
 # Función para obtener las citas pendientes del día
-def get_today_appointments():
+def get_today_ointments():
     try:
         today = datetime.now().date()  # Obtiene la fecha actual
         estatus = 'pendiente'  # Define el estatus de las citas a buscar
@@ -114,9 +114,9 @@ def get_today_appointments():
         cur.execute("SELECT id, nombre_alumno, correo_alumno, departamento, hora, dia FROM citas WHERE dia = %s AND estatus = %s", (today, estatus))
         rows = cur.fetchall()  # Obtiene todas las filas resultantes de la consulta
 
-        appointments = []  # Lista para almacenar las citas
+        ointments = []  # Lista para almacenar las citas
         for row in rows:
-            appointments.append({
+            ointments.end({
                 "id": row[0],  # ID de la cita
                 "nombre_alumno": row[1],  # Nombre del alumno
                 "correo_alumno": row[2],  # Correo del alumno
@@ -125,8 +125,8 @@ def get_today_appointments():
                 "dia": row[5].strftime('%Y-%m-%d')  # Formato de fecha YYYY-MM-DD
             })
         
-        logger.info(f"Citas obtenidas: {appointments}")  # Registra las citas obtenidas
-        return appointments  # Retorna la lista de citas
+        logger.info(f"Citas obtenidas: {ointments}")  # Registra las citas obtenidas
+        return ointments  # Retorna la lista de citas
     except Exception as e:
         logger.error(f"Error al obtener las citas del día: {e}")  # Registra un mensaje de error si ocurre una excepción
         return []  # Retorna una lista vacía en caso de error
@@ -152,15 +152,15 @@ def handle_connect():
     print("✅ Cliente WebSocket conectado")
     emit('message', {"msg": "Conectado correctamente"})
 
-# 🏁 Ejecutar el hilo de actualizaciones al arrancar la app
-@app.before_first_request
+# 🏁 Ejecutar el hilo de actualizaciones al arrancar la 
+@.before_first_request
 def start_background_thread():
     thread = Thread(target=send_updates)
     thread.daemon = True
     thread.start()
 
 # 🧪 Ruta de prueba (puedes eliminarla si no la necesitas)
-@app.route('/')
+@.route('/')
 def index():
     return "<h1>Servidor corriendo con WebSocket</h1>"
 
@@ -169,7 +169,7 @@ def send_updates():
         socketio.sleep(1)  # similar a asyncio.sleep
         data = {
             "comentarios": get_comment_data(),
-            "citas": get_today_appointments(),
+            "citas": get_today_ointments(),
             "total_alumnos": get_total_alumnos()
         }
         socketio.emit('actualizacion', data)
@@ -808,41 +808,15 @@ update_citas_vencidas()
 actualizar_citas_periodicamente(1200)
 
 
-# Manejo de conexiones WebSocket
-async def handle_connection(websocket, path):
-    clients.add(websocket)  # Agrega el nuevo cliente a la lista de clientes conectados
+# Función que maneja las conexiones WebSocket
+@socketio.on('connect')
+def handle_connection():
+    clients.add(request.sid)  # Agrega al cliente
+    logger.info(f"✅ Cliente conectado: {request.sid}")
+    
     try:
-        logger.info(f"Cliente conectado: {websocket.remote_address}")  # Registra la conexión de un cliente
-        
         while True:
-            await asyncio.sleep(1)  # Espera 1 segundo entre cada iteración
-            comment_data = get_comment_data()  # Obtiene los datos de los comentarios
-            appointments = get_today_appointments()  # Obtiene las citas pendientes del día
-            total_alumnos = get_total_alumnos()  # Obtiene el total de alumnos
-
-            response_data = {
-                "comentarios": comment_data, 
-                "citas": appointments,
-                "total_alumnos": total_alumnos
-            }  # Crea un diccionario con los datos obtenidos
-            logger.info(f"Enviando datos actualizados: {response_data}")  # Registra los datos que se enviarán
-            await websocket.send(json.dumps(response_data))  # Envía los datos al cliente en formato JSON
-    except websockets.exceptions.ConnectionClosed as e:
-        logger.warning(f"Conexión cerrada con {websocket.remote_address}: {e}")  # Registra un aviso si la conexión se cierra
-    except Exception as e:
-        logger.error(f"Error en la conexión con el cliente {websocket.remote_address}: {e}")  # Registra un error si ocurre una excepción
-    finally:
-        logger.info(f"Conexión cerrada con {websocket.remote_address}")  # Registra el cierre de la conexión
-        await websocket.close()  # Cierra la conexión WebSocket
-# Función para enviar actualizaciones de comentarios o citas a todos los clientes conectados
-async def handle_connection(websocket, path):
-    clients.add(websocket)  # Agregar cliente
-    try:
-        logger.info(f"✅ Cliente conectado: {websocket.remote_address}")
-
-        while True:
-            await asyncio.sleep(1)  # Evita sobrecargar el servidor
-
+            # Simulamos obtener datos de la base de datos
             comment_data = get_comment_data()
             appointments = get_today_appointments()
             total_alumnos = get_total_alumnos()
@@ -854,18 +828,16 @@ async def handle_connection(websocket, path):
             }
 
             logger.info(f"📡 Enviando datos actualizados: {response_data}")
-            await websocket.send(json.dumps(response_data))  
+            socketio.emit('data_update', json.dumps(response_data))  # Enviar los datos a todos los clientes conectados
 
-    except websockets.exceptions.ConnectionClosed:
-        logger.warning(f"⚠️ Cliente desconectado: {websocket.remote_address}")
+            socketio.sleep(1)  # Espera 1 segundo entre actualizaciones para evitar sobrecargar el servidor
 
     except Exception as e:
-        logger.error(f"❌ Error en conexión WebSocket con {websocket.remote_address}: {e}")
+        logger.error(f"❌ Error: {e}")
 
     finally:
-        clients.discard(websocket)  # Quitar cliente de la lista
-        logger.info(f"🔄 Conexión cerrada con {websocket.remote_address}")
-        await websocket.close()
+        clients.discard(request.sid)  # Eliminar cliente de la lista
+        logger.info(f"🔄 Conexión cerrada con {request.sid}")
 
 
 # 🚀 Iniciar servidor con SocketIO
