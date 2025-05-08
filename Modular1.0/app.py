@@ -15,6 +15,7 @@ import threading  # Importa el módulo threading para manejar hilos
 import re  # Importa el módulo re para trabajar con expresiones regulares
 import os
 import psycopg2
+from psycopg2 import pool
 from websockets import serve
 from flask import Flask
 
