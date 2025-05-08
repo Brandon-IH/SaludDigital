@@ -524,6 +524,7 @@ def get_nutriologia():
 @app.route('/api/citas', methods=['GET'])
 @login_required
 def get_citas_data():
+    conn = connection_pool.getconn()
     try:
         with conn.cursor() as cur:
             cur.execute("SELECT id, nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, estatus FROM citas")
@@ -551,6 +552,8 @@ def get_citas_data():
     except Exception as e:
         logger.error(f"❌ Error al obtener las citas: {e}")
         return jsonify({"error": "Error al obtener las citas"}), 500
+    finally:
+        connection_pool.putconn(conn)
 
 
 @app.route('/update_password', methods=['GET', 'POST'])
@@ -565,6 +568,7 @@ def update_password():
         if user and check_password_hash(user.password, current_password):
             hashed_password = generate_password_hash(new_password)
 
+            conn = connection_pool.getconn()
             try:
                 with conn.cursor() as cur:
                     cur.execute("UPDATE usuarios SET password = %s WHERE id = %s", (hashed_password, user.id))
@@ -579,6 +583,9 @@ def update_password():
                 logger.error(f"❌ Error en la actualización de contraseña: {e}")
                 return redirect(url_for('update_password'))
 
+            finally:
+                connection_pool.putconn(conn)
+
         flash('Contraseña actual incorrecta', 'danger')
 
     return render_template('update_password.html')
@@ -587,6 +594,7 @@ def update_password():
 @app.route('/profile_edit', methods=['GET'])
 @login_required
 def profile_edit():
+    conn = connection_pool.getconn()
     try:
         with conn.cursor() as cur:
             cur.execute("SELECT departamento, dia, hora FROM citas WHERE codigo = %s AND estatus = 'pendiente'", (current_user.id,))
@@ -598,11 +606,15 @@ def profile_edit():
         logger.error(f"❌ Error al obtener citas: {e}")
         return render_template("profile.html", user=current_user, citas=[])
 
+    finally:
+        connection_pool.putconn(conn)
+
 
 @app.route('/api/citas', methods=['POST'])
 @login_required
 def add_cita():
     data = request.json
+    conn = connection_pool.getconn()
     try:
         with conn.cursor() as cur:
             cur.execute("""
@@ -615,12 +627,15 @@ def add_cita():
         conn.rollback()
         logger.error(f"❌ Error al agregar una cita: {e}")
         return jsonify({"error": "Error al agregar una cita"}), 500
+    finally:
+        connection_pool.putconn(conn)
 
 
 @app.route('/api/citas/<int:id>', methods=['PUT'])
 @login_required
 def update_cita(id):
     data = request.json
+    conn = connection_pool.getconn()
     try:
         with conn.cursor() as cur:
             cur.execute("""
@@ -634,11 +649,14 @@ def update_cita(id):
         conn.rollback()
         logger.error(f"❌ Error al actualizar la cita: {e}")
         return jsonify({"error": "Error al actualizar la cita"}), 500
+    finally:
+        connection_pool.putconn(conn)
 
 
 @app.route('/api/citas/<int:id>', methods=['DELETE'])
 @login_required
 def delete_cita(id):
+    conn = connection_pool.getconn()
     try:
         with conn.cursor() as cur:
             cur.execute("DELETE FROM citas WHERE id=%s", (id,))
@@ -648,6 +666,9 @@ def delete_cita(id):
         conn.rollback()
         logger.error(f"❌ Error al eliminar la cita: {e}")
         return jsonify({"error": "Error al eliminar la cita"}), 500
+    finally:
+        connection_pool.putconn(conn)
+
 
 def actualizar_citas_periodicamente(intervalo):
     def ejecutar():
@@ -661,11 +682,13 @@ def actualizar_citas_periodicamente(intervalo):
 
     planificar()
 
+
 def update_citas_vencidas():
     try:
         now = datetime.now().time()
         today = datetime.now().date()
 
+        conn = connection_pool.getconn()
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE citas 
@@ -679,10 +702,13 @@ def update_citas_vencidas():
     except psycopg2.DatabaseError as e:
         conn.rollback()
         logger.error(f"❌ Error al actualizar citas vencidas: {e}")
+    finally:
+        connection_pool.putconn(conn)
 
 
 def get_user_appointments(user_id):
     try:
+        conn = connection_pool.getconn()
         with conn.cursor() as cur:
             cur.execute("SELECT departamento, dia, hora FROM citas WHERE codigo = %s AND estatus = 'pendiente'", (user_id,))
             rows = cur.fetchall()
@@ -692,6 +718,8 @@ def get_user_appointments(user_id):
     except psycopg2.DatabaseError as e:
         logger.error(f"❌ Error al obtener citas del usuario {user_id}: {e}")
         return []
+    finally:
+        connection_pool.putconn(conn)
     
 @app.route('/api/comentarios', methods=['POST'])
 def agregar_comentario():
