@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${cita.departamento}</td>
                 <td>${cita.hora}</td>
                 <td>${cita.dia}</td>
+                <td>${cita.celular}</td>
                 <td>${cita.estatus}</td>
                 <td>
                     <div class="button-container">
@@ -100,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
             departamento: document.getElementById('departamento').value,
             hora: document.getElementById('hora').value,
             dia: document.getElementById('dia').value,
+            celular: document.getElementById('celular').value,
             estatus: document.getElementById('estatus').value
         };
         // Convertir el formato dd-mm-yyyy a yyyy-mm-dd
@@ -202,6 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('departamento').value = cita.departamento;
             document.getElementById('hora').value = cita.hora;
             document.getElementById('dia').value = cita.dia;
+            document.getElementById('celular').value = cita.celular;
             document.getElementById('estatus').value = cita.estatus;
         } else if (event.target.classList.contains('delete')) {
             const citaId = event.target.dataset.id;
