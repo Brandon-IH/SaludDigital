@@ -214,43 +214,53 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* --- AGENDAR CITA --- */
+/* --- ESTILOS DEL FORMULARIO DE AGENDAR CITA --- */
 .agendar-cita {
     padding: 4rem 2rem;
     background-color: #eef5fb;
+    text-align: center;
 }
 
 .agendar-cita__titulo {
-    text-align: center;
     font-size: 2rem;
+    font-weight: bold;
+    color: #005baa;
     margin-bottom: 2rem;
 }
 
-.agendar-cita__formulario {
+#citasForm {
     max-width: 600px;
     margin: 0 auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     display: grid;
     gap: 1rem;
 }
 
-.formulario__titulo {
-    font-weight: 500;
+#citasForm label {
+    font-weight: bold;
+    color: #333;
 }
 
-.formulario__campo {
+#citasForm input,
+#citasForm select {
     padding: 0.7rem;
-    border-radius: 5px;
     border: 1px solid #ccc;
+    border-radius: 5px;
     font-size: 1rem;
+    transition: all 0.3s ease-in-out;
 }
 
-.formulario__campo:focus {
+#citasForm input:focus,
+#citasForm select:focus {
     outline: none;
     border-color: #0074d9;
-    box-shadow: 0 0 0 2px rgba(0, 116, 217, 0.2);
+    box-shadow: 0 0 8px rgba(0, 116, 217, 0.2);
 }
 
-.formulario__boton {
+.button {
     padding: 0.8rem;
     background-color: #0074d9;
     color: white;
@@ -258,12 +268,14 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.formulario__boton:hover {
+.button:hover {
     background-color: #005baa;
+    transform: scale(1.05);
 }
+
 
 /* --- COMENTARIOS --- */
 .comentarios {
