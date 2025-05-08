@@ -533,12 +533,13 @@ def agendar_cita():
         departamento = request.form['servicio']
         dia = request.form['fecha']
         hora = request.form['hora']
+        celular = request.form['celular']
 
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO citas (nombre_alumno, apellidos, codigo, correo_alumno, telefono, departamento, dia, hora, estatus)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (nombre, apellidos, codigo, correo, telefono, departamento, dia, hora, 'pendiente'))
+                INSERT INTO citas (nombre_alumno, apellidos, codigo, correo_alumno, departamento, dia, hora, celular, estatus)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (nombre, apellidos, codigo, correo, telefono, departamento, dia, hora, celular, 'pendiente'))
             conn.commit()
 
         flash('Cita agendada con éxito')
@@ -555,7 +556,7 @@ def get_citas_data():
     conn = connection_pool.getconn()
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT id, nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, estatus FROM citas")
+            cur.execute("SELECT id, nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, celular, estatus FROM citas")
             rows = cur.fetchall()
 
         citas = []
@@ -585,7 +586,8 @@ def get_citas_data():
                 'departamento': row[5],
                 'hora': hora,
                 'dia': dia,
-                'estatus': row[8]
+                'celular': row[8],
+                'estatus': row[9]
             })
 
         return jsonify(citas)
