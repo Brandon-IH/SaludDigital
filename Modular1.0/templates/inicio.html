@@ -109,9 +109,9 @@
         <div class="agendar-cita reveal" id="agendar-cita">
 
             <h2 class="agendar-cita__titulo">Agendar cita</h2>
-            <form class="agendar-cita__formulario" action="/agendar" method="POST">
-
-
+            <form id="citasForm">
+                <input type="hidden" id="id" name="id">
+                
                 <label for="nombre_alumno">Nombre del Alumno:</label>
                 <input type="text" id="nombre_alumno" name="nombre_alumno" required>
     
@@ -148,7 +148,7 @@
                 </select>
                 
                 <button class="button" type="submit">Agendar cita</button>
-
+            
             </form>
 
         </div>
