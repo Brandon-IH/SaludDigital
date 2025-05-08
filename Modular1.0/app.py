@@ -19,7 +19,7 @@ from psycopg2 import pool
 from websockets import serve
 from flask import Flask
 from werkzeug.security import check_password_hash
-bcrypt = Bcrypt(app)
+
 
 
 # Crea una cola de mensajes para la comunicación entre Flask y WebSocket
@@ -192,6 +192,7 @@ def get_comment_data():
 
 # Aplicación Flask para gestión de citas y login
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 # Configura la clave secreta para la aplicación Flask
 app.config['SECRET_KEY'] = '214604219'
 
