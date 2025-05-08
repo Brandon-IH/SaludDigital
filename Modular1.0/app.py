@@ -688,7 +688,7 @@ def update_cita(id):
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE citas 
-                SET nombre_alumno=%s, apellidos=%s, correo_alumno=%s, codigo=%s, departamento=%s, hora=%s, dia=%s, celular%, estatus=%s 
+                SET nombre_alumno=%s, apellidos=%s, correo_alumno=%s, codigo=%s, departamento=%s, hora=%s, dia=%s, celular=%s, estatus=%s 
                 WHERE id=%s
             """, (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['celular'], data['estatus'], id))
             conn.commit()
