@@ -6,7 +6,7 @@ import logging  # Importa el módulo logging para registrar mensajes de log
 import smtplib # Importa el módulo smtplib para enviar correos electrónicos
 import subprocess  # Importa el módulo subprocess para ejecutar comandos del sistema
 from email.message import EmailMessage  # Importa la clase EmailMessage para crear mensajes de correo electrónico
-from datetime import datetime  # Importa la clase datetime para trabajar con fechas y horas
+from datetime import datetime, date, time # Importa la clase datetime para trabajar con fechas y horas
 from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for, flash  # Importa varias funciones y clases de Flask para crear la aplicación web
 from flask_bcrypt import Bcrypt  # Importa Bcrypt de Flask para manejar el hashing de contraseñas
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user  # Importa varias funciones y clases de Flask-Login para manejar la autenticación de usuarios
@@ -532,21 +532,21 @@ def get_citas_data():
 
         citas = []
         for row in rows:
-            # Verificar si la hora es válida y convertirla
-            if row[6] and isinstance(row[6], datetime.time):  # Si la hora es un objeto datetime.time
-                hora = row[6].strftime('%H:%M')  # Formatear la hora
-            elif row[6]:  # Si la hora es una cadena, convertirla a time
-                hora = datetime.strptime(row[6], '%H:%M:%S').time().strftime('%H:%M')
+            hora_val = row[6]
+            if isinstance(hora_val, time):
+                hora = hora_val.strftime('%H:%M')
+            elif isinstance(hora_val, str):
+                hora = datetime.strptime(hora_val, '%H:%M:%S').strftime('%H:%M')
             else:
-                hora = None  # Si no hay hora, asignar None
+                hora = None
 
-            # Verificar si el día es válido
-            if row[7] and isinstance(row[7], datetime.date):  # Si el día es un objeto datetime.date
-                dia = row[7].strftime('%Y-%m-%d')  # Formatear el día
-            elif row[7]:  # Si el día es una cadena, convertirlo a date
-                dia = datetime.strptime(row[7], '%Y-%m-%d').date().strftime('%Y-%m-%d')
+            dia_val = row[7]
+            if isinstance(dia_val, date):
+                dia = dia_val.strftime('%Y-%m-%d')
+            elif isinstance(dia_val, str):
+                dia = datetime.strptime(dia_val, '%Y-%m-%d').strftime('%Y-%m-%d')
             else:
-                dia = None  # Si no hay día, asignar None
+                dia = None
 
             citas.append({
                 'id': row[0],
@@ -555,8 +555,8 @@ def get_citas_data():
                 'correo_alumno': row[3],
                 'codigo': row[4],
                 'departamento': row[5],
-                'hora': hora,  # Agregar la hora formateada
-                'dia': dia,  # Agregar el día formateado
+                'hora': hora,
+                'dia': dia,
                 'estatus': row[8]
             })
 
@@ -567,7 +567,6 @@ def get_citas_data():
         return jsonify({"error": "Error al obtener las citas"}), 500
     finally:
         connection_pool.putconn(conn)
-
 
 
 
