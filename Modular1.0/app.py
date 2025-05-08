@@ -61,7 +61,7 @@ def enviar_correo_bienvenida(destinatario, nombre_usuario, password):
     ¡Gracias por registrarte en nuestra plataforma!
 
     Aquí tienes tus credenciales:
-    👤 Usuario :): {nombre_usuario}
+    👤 Usuario: {nombre_usuario}
     🔑 Contraseña: {password}
 
     En caso de que olvides tu contraseña, puedes restablecerla con el siguiente enlace:
