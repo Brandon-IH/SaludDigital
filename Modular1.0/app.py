@@ -323,7 +323,13 @@ def login():
 
         user = User.get_by_username(username)
 
-        if user and user.password and user.password.startswith("$2b$") and check_password_hash(user.password, password):
+        if user:
+            print(f"🔍 Usuario encontrado: {user.username}, Hash almacenado: {user.password}")  # Depuración
+
+        # ✅ Convertir la contraseña almacenada en string explícitamente antes de compararla
+        stored_password = str(user.password) if user and user.password else None
+        
+        if stored_password and stored_password.startswith("$2b$") and check_password_hash(stored_password, password):
             login_user(user)
             return redirect(url_for('serve_index'))
         else:
@@ -331,7 +337,6 @@ def login():
             logger.warning(f"⚠️ Fallo en autenticación para usuario '{username}'")
             return redirect(url_for('login'))
     
-    # ✅ Manejo de la solicitud GET para mostrar el formulario de login
     return render_template('login.html')
 
 @app.route('/logout')
