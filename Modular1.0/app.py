@@ -230,10 +230,17 @@ class User(UserMixin):
                 """, (username,))
                 user_data = cur.fetchone()
     
-                return User(*user_data) if user_data else None
+                if user_data:
+                    print(f"🔍 Datos recuperados de la BD: {user_data}")  # Verifica que se está obteniendo un hash válido
+                    return User(*user_data)
+    
+                logger.warning(f"⚠️ No se encontró usuario con username '{username}'")
+                return None
+    
         except psycopg2.DatabaseError as e:
             logger.error(f"❌ Error en la consulta get_by_username: {e}")
             return None
+    
         finally:
             connection_pool.putconn(conn)
 
