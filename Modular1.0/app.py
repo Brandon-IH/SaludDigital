@@ -333,7 +333,8 @@ def login():
 
         stored_password = str(user.password) if user and user.password else None
 
-        if stored_password and stored_password.startswith("$2b$") and check_password_hash(stored_password, password):
+        # 🔐 Verificación usando bcrypt
+        if stored_password and stored_password.startswith("$2b$") and bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
             login_user(user)
             return redirect(url_for('serve_index'))
         else:
