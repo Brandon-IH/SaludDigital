@@ -11,14 +11,12 @@ from flask_socketio import emit
 from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for, flash  # Importa varias funciones y clases de Flask para crear la aplicación web
 from flask_bcrypt import Bcrypt  # Importa Bcrypt de Flask para manejar el hashing de contraseñas
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user  # Importa varias funciones y clases de Flask-Login para manejar la autenticación de usuarios
-from websockets.server import serve  # Importa la función serve de websockets para iniciar el servidor WebSocket
 import threading  # Importa el módulo threading para manejar hilos
 from threading import Thread
 import re  # Importa el módulo re para trabajar con expresiones regulares
 import os
 import psycopg2
 from psycopg2 import pool
-from websockets import serve
 from flask import Flask
 from werkzeug.security import check_password_hash
 
@@ -219,7 +217,7 @@ def get_comment_data():
 
 # Aplicación Flask para gestión de citas y login
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, async_mode='eventlet')
 bcrypt = Bcrypt(app)
 # Configura la clave secreta para la aplicación Flask
 app.config['SECRET_KEY'] = '214604219'
