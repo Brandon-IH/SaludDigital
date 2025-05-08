@@ -1,4 +1,5 @@
 import asyncio  # Importa el módulo asyncio para manejar operaciones asíncronas
+import websockets  # Importa el módulo websockets para manejar conexiones WebSocket
 import json  # Importa el módulo json para trabajar con datos JSON
 import psycopg2  # Importa el módulo psycopg2 para conectarse a una base de datos PostgreSQL
 import logging  # Importa el módulo logging para registrar mensajes de log
@@ -6,17 +7,16 @@ import smtplib # Importa el módulo smtplib para enviar correos electrónicos
 import subprocess  # Importa el módulo subprocess para ejecutar comandos del sistema
 from email.message import EmailMessage  # Importa la clase EmailMessage para crear mensajes de correo electrónico
 from datetime import datetime, date, time # Importa la clase datetime para trabajar con fechas y horas
-from flask_socketio import SocketIO
-from flask_socketio import emit
 from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for, flash  # Importa varias funciones y clases de Flask para crear la aplicación web
 from flask_bcrypt import Bcrypt  # Importa Bcrypt de Flask para manejar el hashing de contraseñas
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user  # Importa varias funciones y clases de Flask-Login para manejar la autenticación de usuarios
+from websockets.server import serve  # Importa la función serve de websockets para iniciar el servidor WebSocket
 import threading  # Importa el módulo threading para manejar hilos
-from threading import Thread
 import re  # Importa el módulo re para trabajar con expresiones regulares
 import os
 import psycopg2
 from psycopg2 import pool
+from websockets import serve
 from flask import Flask
 from werkzeug.security import check_password_hash
 
@@ -105,7 +105,7 @@ def validate_password(password):
     return True
 
 # Función para obtener las citas pendientes del día
-def get_today_ointments():
+def get_today_appointments():
     try:
         today = datetime.now().date()  # Obtiene la fecha actual
         estatus = 'pendiente'  # Define el estatus de las citas a buscar
@@ -114,9 +114,9 @@ def get_today_ointments():
         cur.execute("SELECT id, nombre_alumno, correo_alumno, departamento, hora, dia FROM citas WHERE dia = %s AND estatus = %s", (today, estatus))
         rows = cur.fetchall()  # Obtiene todas las filas resultantes de la consulta
 
-        ointments = []  # Lista para almacenar las citas
+        appointments = []  # Lista para almacenar las citas
         for row in rows:
-            ointments.end({
+            appointments.append({
                 "id": row[0],  # ID de la cita
                 "nombre_alumno": row[1],  # Nombre del alumno
                 "correo_alumno": row[2],  # Correo del alumno
@@ -125,8 +125,8 @@ def get_today_ointments():
                 "dia": row[5].strftime('%Y-%m-%d')  # Formato de fecha YYYY-MM-DD
             })
         
-        logger.info(f"Citas obtenidas: {ointments}")  # Registra las citas obtenidas
-        return ointments  # Retorna la lista de citas
+        logger.info(f"Citas obtenidas: {appointments}")  # Registra las citas obtenidas
+        return appointments  # Retorna la lista de citas
     except Exception as e:
         logger.error(f"Error al obtener las citas del día: {e}")  # Registra un mensaje de error si ocurre una excepción
         return []  # Retorna una lista vacía en caso de error
@@ -147,32 +147,7 @@ def get_total_alumnos():
         logger.error(f"Error al obtener el total de alumnos: {e}")
         # Retorna 0 en caso de error
         return 0
-@socketio.on('connect')
-def handle_connect():
-    print("✅ Cliente WebSocket conectado")
-    emit('message', {"msg": "Conectado correctamente"})
 
-# 🏁 Ejecutar el hilo de actualizaciones al arrancar la 
-@.before_first_request
-def start_background_thread():
-    thread = Thread(target=send_updates)
-    thread.daemon = True
-    thread.start()
-
-# 🧪 Ruta de prueba (puedes eliminarla si no la necesitas)
-@.route('/')
-def index():
-    return "<h1>Servidor corriendo con WebSocket</h1>"
-
-def send_updates():
-    while True:
-        socketio.sleep(1)  # similar a asyncio.sleep
-        data = {
-            "comentarios": get_comment_data(),
-            "citas": get_today_ointments(),
-            "total_alumnos": get_total_alumnos()
-        }
-        socketio.emit('actualizacion', data)
 # Función para obtener los datos de los comentarios, incluyendo el total
 def get_comment_data():
     try:
@@ -217,7 +192,6 @@ def get_comment_data():
 
 # Aplicación Flask para gestión de citas y login
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode='eventlet')
 bcrypt = Bcrypt(app)
 # Configura la clave secreta para la aplicación Flask
 app.config['SECRET_KEY'] = '214604219'
@@ -808,15 +782,41 @@ update_citas_vencidas()
 actualizar_citas_periodicamente(1200)
 
 
-# Función que maneja las conexiones WebSocket
-@socketio.on('connect')
-def handle_connection():
-    clients.add(request.sid)  # Agrega al cliente
-    logger.info(f"✅ Cliente conectado: {request.sid}")
-    
+# Manejo de conexiones WebSocket
+async def handle_connection(websocket, path):
+    clients.add(websocket)  # Agrega el nuevo cliente a la lista de clientes conectados
     try:
+        logger.info(f"Cliente conectado: {websocket.remote_address}")  # Registra la conexión de un cliente
+        
         while True:
-            # Simulamos obtener datos de la base de datos
+            await asyncio.sleep(1)  # Espera 1 segundo entre cada iteración
+            comment_data = get_comment_data()  # Obtiene los datos de los comentarios
+            appointments = get_today_appointments()  # Obtiene las citas pendientes del día
+            total_alumnos = get_total_alumnos()  # Obtiene el total de alumnos
+
+            response_data = {
+                "comentarios": comment_data, 
+                "citas": appointments,
+                "total_alumnos": total_alumnos
+            }  # Crea un diccionario con los datos obtenidos
+            logger.info(f"Enviando datos actualizados: {response_data}")  # Registra los datos que se enviarán
+            await websocket.send(json.dumps(response_data))  # Envía los datos al cliente en formato JSON
+    except websockets.exceptions.ConnectionClosed as e:
+        logger.warning(f"Conexión cerrada con {websocket.remote_address}: {e}")  # Registra un aviso si la conexión se cierra
+    except Exception as e:
+        logger.error(f"Error en la conexión con el cliente {websocket.remote_address}: {e}")  # Registra un error si ocurre una excepción
+    finally:
+        logger.info(f"Conexión cerrada con {websocket.remote_address}")  # Registra el cierre de la conexión
+        await websocket.close()  # Cierra la conexión WebSocket
+# Función para enviar actualizaciones de comentarios o citas a todos los clientes conectados
+async def handle_connection(websocket, path):
+    clients.add(websocket)  # Agregar cliente
+    try:
+        logger.info(f"✅ Cliente conectado: {websocket.remote_address}")
+
+        while True:
+            await asyncio.sleep(1)  # Evita sobrecargar el servidor
+
             comment_data = get_comment_data()
             appointments = get_today_appointments()
             total_alumnos = get_total_alumnos()
@@ -828,22 +828,24 @@ def handle_connection():
             }
 
             logger.info(f"📡 Enviando datos actualizados: {response_data}")
-            socketio.emit('data_update', json.dumps(response_data))  # Enviar los datos a todos los clientes conectados
+            await websocket.send(json.dumps(response_data))  
 
-            socketio.sleep(1)  # Espera 1 segundo entre actualizaciones para evitar sobrecargar el servidor
+    except websockets.exceptions.ConnectionClosed:
+        logger.warning(f"⚠️ Cliente desconectado: {websocket.remote_address}")
 
     except Exception as e:
-        logger.error(f"❌ Error: {e}")
+        logger.error(f"❌ Error en conexión WebSocket con {websocket.remote_address}: {e}")
 
     finally:
-        clients.discard(request.sid)  # Eliminar cliente de la lista
-        logger.info(f"🔄 Conexión cerrada con {request.sid}")
+        clients.discard(websocket)  # Quitar cliente de la lista
+        logger.info(f"🔄 Conexión cerrada con {websocket.remote_address}")
+        await websocket.close()
 
 
-# 🚀 Iniciar servidor con SocketIO
-if __name__ == '__main__':
-    port = int(os.getenv("PORT", 8080))
-    socketio.run(app, host='0.0.0.0', port=port)
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8080))  # Flask en 8080
+    threading.Thread(target=websocket_thread).start()  # WebSocket en hilo separado
+    app.run(host="0.0.0.0", port=port)
 
 
 
