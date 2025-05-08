@@ -19,6 +19,7 @@ from psycopg2 import pool
 from websockets import serve
 from flask import Flask
 from werkzeug.security import check_password_hash
+bcrypt = Bcrypt(app)
 
 
 # Crea una cola de mensajes para la comunicación entre Flask y WebSocket
@@ -326,15 +327,14 @@ def login():
         if user:
             print(f"🔍 Usuario encontrado: {user.username}, Hash almacenado: {user.password}")  # Depuración
 
-        # ✅ Validar que la contraseña ingresada por el usuario no esté vacía o mal formateada
         if not password or len(password) < 6:
             flash("⚠️ La contraseña ingresada es demasiado corta o vacía.", "danger")
             return redirect(url_for('login'))
 
         stored_password = str(user.password) if user and user.password else None
 
-        # 🔐 Verificación usando bcrypt
-        if stored_password and stored_password.startswith("$2b$") and bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
+        # ✅ Usa Flask-Bcrypt correctamente aquí
+        if stored_password and bcrypt.check_password_hash(stored_password, password):
             login_user(user)
             return redirect(url_for('serve_index'))
         else:
@@ -343,6 +343,7 @@ def login():
             return redirect(url_for('login'))
 
     return render_template('login.html')
+
 
 @app.route('/logout')
 @login_required
