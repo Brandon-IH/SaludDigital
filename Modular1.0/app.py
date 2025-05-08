@@ -221,18 +221,22 @@ class User(UserMixin):
     @staticmethod
     def get_by_username(username):
         try:
-            cur = conn.cursor()
-            cur.execute("""
-                SELECT id, username, password, email, full_name, birthdate, phone, area 
-                FROM usuarios WHERE username = %s
-            """, (username,))
-            user_data = cur.fetchone()
-            cur.close()
-
-            if user_data:
-                return User(*user_data)
-            return None
-        except Exception as e:
+            if conn.closed:
+                logger.warning("⚠️ La conexión a la base de datos estaba cerrada, reabriéndola...")
+                global conn
+                conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
+            
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT id, username, password, email, full_name, birthdate, phone, area 
+                    FROM usuarios WHERE username = %s
+                """, (username,))
+                user_data = cur.fetchone()
+    
+                if user_data:
+                    return User(*user_data)
+                return None
+        except psycopg2.DatabaseError as e:
             logger.error(f"❌ Error en la consulta get_by_username: {e}")
             return None
 
