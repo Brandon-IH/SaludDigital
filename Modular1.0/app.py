@@ -33,35 +33,60 @@ logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo
 # Intenta obtener DATABASE_URL desde variables de entorno
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Fallback en caso de que estés trabajando localmente
+import os
+import psycopg2
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+import os
+import psycopg2
+import logging
+
+# Configurar logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Obtener la URL de la base de datos desde Railway
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 if not DATABASE_URL:
     logger.warning("⚠️ DATABASE_URL no encontrada en variables de entorno, usando URL local")
     DATABASE_URL = "postgresql://postgres:DkpudEUPuVLMNzFbqzjfQoDVAPJwaKhH@postgres.railway.internal:5432/railway"
 
 try:
+    # Conectar a PostgreSQL con timeout
     conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
     cur = conn.cursor()
 
     logger.info("✅ Conexión a la base de datos exitosa")
 
+    # Verificar tablas en la base de datos
     cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';")
     tables = cur.fetchall()
     logger.info(f"📄 Tablas en la base de datos: {tables}")
 
+    # Cargar backup desde archivo SQL
+    logger.info("⏳ Restaurando la base de datos desde 'nuevo_backup.sql'...")
+    
+    with open("nuevo_backup.sql", "r") as f:
+        sql_script = f.read()
+
+    cur.execute(sql_script)
+    conn.commit()
+
+    logger.info("✅ Backup restaurado correctamente")
+
 except psycopg2.OperationalError as e:
     logger.error(f"❌ Error de conexión a PostgreSQL: {e}")
-    exit(1)
 
 except Exception as e:
     logger.error(f"⚠️ Error inesperado: {e}")
-    exit(1)
 
 finally:
     if 'conn' in locals():
         cur.close()
         conn.close()
         logger.info("🔄 Conexión cerrada correctamente")
-
 
 def enviar_correo_bienvenida(destinatario, nombre_usuario, password):
     mensaje = EmailMessage()
