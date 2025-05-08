@@ -233,6 +233,12 @@ class User(UserMixin):
                 if user_data:
                     print(f"🔍 Datos recuperados de la BD: {user_data}")  # Verifica que se está obteniendo un hash válido
                     return User(*user_data)
+                if user and user.password and user.password.startswith("$2b$"):
+                    if check_password_hash(user.password, password):
+                        print("✅ La contraseña es válida")
+                    else:
+                        print("❌ La contraseña no es correcta")
+
     
                 logger.warning(f"⚠️ No se encontró usuario con username '{username}'")
                 return None
