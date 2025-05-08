@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo
 
 # Configurar la conexión global
 DATABASE_URL = os.getenv("DATABASE_URL")
+conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
 conn = None
 cur = None
 
@@ -220,22 +221,18 @@ class User(UserMixin):
     @staticmethod
     def get_by_username(username):
         try:
-            if conn.closed:
-                logger.warning("⚠️ La conexión a la base de datos estaba cerrada, reabriéndola...")
-                global conn
-                conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
-            
-            with conn.cursor() as cur:
-                cur.execute("""
-                    SELECT id, username, password, email, full_name, birthdate, phone, area 
-                    FROM usuarios WHERE username = %s
-                """, (username,))
-                user_data = cur.fetchone()
-    
-                if user_data:
-                    return User(*user_data)
-                return None
-        except psycopg2.DatabaseError as e:
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT id, username, password, email, full_name, birthdate, phone, area 
+                FROM usuarios WHERE username = %s
+            """, (username,))
+            user_data = cur.fetchone()
+            cur.close()
+
+            if user_data:
+                return User(*user_data)
+            return None
+        except Exception as e:
             logger.error(f"❌ Error en la consulta get_by_username: {e}")
             return None
 
@@ -762,4 +759,3 @@ if __name__ == "__main__":
 # Cerrar la conexión a la base de datos al finalizar
 cur.close()  # Cierra el cursor de la base de datos
 conn.close()  # Cierra la conexión a la base de datos
-
