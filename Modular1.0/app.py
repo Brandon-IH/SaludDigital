@@ -18,6 +18,7 @@ import psycopg2
 from psycopg2 import pool
 from websockets import serve
 from flask import Flask
+from werkzeug.security import check_password_hash
 
 
 # Crea una cola de mensajes para la comunicación entre Flask y WebSocket
