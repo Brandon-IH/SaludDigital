@@ -32,9 +32,8 @@ logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo
 
 # Configurar la conexión global
 DATABASE_URL = os.getenv("DATABASE_URL")
-conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
-conn = None
-cur = None
+connection_pool = pool.SimpleConnectionPool(1, 10, DATABASE_URL)
+
 
 try:
     conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
@@ -220,12 +219,8 @@ class User(UserMixin):
 
     @staticmethod
     def get_by_username(username):
+        conn = connection_pool.getconn()
         try:
-            if conn.closed:
-                logger.warning("⚠️ La conexión a la base de datos estaba cerrada, reabriéndola...")
-                global conn
-                conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
-            
             with conn.cursor() as cur:
                 cur.execute("""
                     SELECT id, username, password, email, full_name, birthdate, phone, area 
@@ -233,13 +228,13 @@ class User(UserMixin):
                 """, (username,))
                 user_data = cur.fetchone()
     
-                if user_data:
-                    return User(*user_data)
-                return None
-    
+                return User(*user_data) if user_data else None
         except psycopg2.DatabaseError as e:
             logger.error(f"❌ Error en la consulta get_by_username: {e}")
             return None
+        finally:
+            connection_pool.putconn(conn)
+
 
 
     @staticmethod
