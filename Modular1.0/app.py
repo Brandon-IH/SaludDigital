@@ -32,7 +32,6 @@ logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo
 
 # Configurar la conexión global
 DATABASE_URL = os.getenv("DATABASE_URL")
-conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
 conn = None
 cur = None
 
