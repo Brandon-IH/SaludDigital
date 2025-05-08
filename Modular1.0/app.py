@@ -30,32 +30,20 @@ from email.message import EmailMessage
 logging.basicConfig(level=logging.INFO)  # Configura el nivel de log a INFO
 logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo actual
 
-# Obtener la URL de la base de datos desde Railway
+# Configurar la conexión global
 DATABASE_URL = os.getenv("DATABASE_URL")
+conn = None
+cur = None
 
 try:
     conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
     cur = conn.cursor()
-    logger.info("✅ Conexión a la base de datos exitosa")
-
-    # Verificar tablas en la base de datos
-    cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';")
-    tables = cur.fetchall()
-    logger.info(f"📄 Tablas en la base de datos: {tables}")
-
+    logger.info("✅ Conexión a la base de datos establecida")
 except psycopg2.OperationalError as e:
     logger.error(f"❌ Error de conexión a PostgreSQL: {e}")
-    conn = None
 
-except Exception as e:
-    logger.error(f"⚠️ Error inesperado: {e}")
-    conn = None
+# Uso de `conn` y `cur` en toda la aplicación sin cerrar la conexión
 
-finally:
-    if conn:
-        cur.close()
-        conn.close()
-        logger.info("🔄 Conexión cerrada correctamente")
 
 def enviar_correo_bienvenida(destinatario, nombre_usuario, password):
     mensaje = EmailMessage()
