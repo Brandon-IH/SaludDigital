@@ -54,6 +54,30 @@ body {
     opacity: 1;
 }
 
+/* --- FORM FIELD ANIMATION --- */
+.formulario__campo,
+.formulario__comentarios {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.formulario__campo:hover,
+.formulario__comentarios:hover {
+    transform: scale(1.02);
+}
+
+/* --- BOTÓN HOVER PULSO --- */
+.formulario__boton:hover,
+.presentacion__boton:hover {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+
 /* --- NAV --- */
 .nav {
     display: flex;
@@ -72,7 +96,11 @@ body {
     font-weight: 600;
     font-size: 1.2rem;
 }
-
+.presentacion__logo {
+    max-width: 300px;
+    width: 90%;
+    animation: fadeInDown 1.2s ease forwards;
+}
 .enlaces__logo {
     height: 40px;
     transition: transform 0.3s ease;
@@ -90,6 +118,7 @@ body {
     background: linear-gradient(135deg, #0074d9, #00c8ff);
     color: white;
     text-align: center;
+    animation: fadeIn 2s ease-in-out;
 }
 
 .presentacion__titulo {
@@ -106,9 +135,11 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-top: 2%;
 }
 .presentacion__boton:hover {
     background-color: #eaf6ff;
+    transform: scale(1.05);
 }
 
 /* --- SERVICIOS --- */
@@ -117,13 +148,73 @@ body {
     text-align: center;
 }
 
+.servicios__titulo {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
 .servicios__contenido {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 2rem;
 }
 
-/* --- FORMULARIO PARA AGENDAR CITA --- */
+.contenido {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+.contenido:hover {
+    transform: translateY(-5px);
+}
+
+.contenido__imagen {
+    width: 80px;
+    margin-bottom: 1rem;
+}
+
+.contenido__titulo {
+    font-weight: 600;
+}
+
+/* --- INTRODUCCION --- */
+.introduccion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2rem;
+    padding: 4rem 2rem;
+    background-color: #ffffff;
+}
+
+.introduccion__texto {
+    flex: 1;
+}
+
+.texto__titulo {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.texto__parrafo {
+    font-size: 1rem;
+    color: #555;
+}
+
+.introduccion__imagen {
+    flex: 1;
+    text-align: center;
+}
+
+.imagen__introduccion {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* --- AGENDAR CITA --- */
 .agendar-cita {
     padding: 4rem 2rem;
     background-color: #eef5fb;
@@ -135,17 +226,43 @@ body {
     margin-bottom: 2rem;
 }
 
+.agendar-cita__formulario {
+    max-width: 600px;
+    margin: 0 auto;
+    display: grid;
+    gap: 1rem;
+}
+
+.formulario__titulo {
+    font-weight: 500;
+}
+
 .formulario__campo {
     padding: 0.7rem;
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.formulario__campo:hover {
+.formulario__campo:focus {
+    outline: none;
     border-color: #0074d9;
     box-shadow: 0 0 0 2px rgba(0, 116, 217, 0.2);
+}
+
+.formulario__boton {
+    padding: 0.8rem;
+    background-color: #0074d9;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.formulario__boton:hover {
+    background-color: #005baa;
 }
 
 /* --- COMENTARIOS --- */
@@ -153,6 +270,22 @@ body {
     padding: 4rem 2rem;
     background-color: #fff;
     text-align: center;
+}
+.comentarios__descripcion {
+    font-size: 1.1rem;
+    color: #444;
+    margin-bottom: 1rem;
+    text-align: center;
+    animation: fadeIn 1.5s ease forwards;
+}
+.servicios__contenido a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.comentarios__titulo {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .comentarios__formulario {
@@ -167,6 +300,7 @@ body {
     padding: 1rem;
     border: 1px solid #ccc;
     border-radius: 5px;
+    resize: vertical;
 }
 
 /* --- FOOTER --- */
@@ -175,6 +309,7 @@ body {
     color: white;
     text-align: center;
     padding: 1.5rem 1rem;
+    font-size: 0.9rem;
 }
 
 .notificacion {
@@ -182,13 +317,21 @@ body {
     bottom: 20px;
     right: 20px;
     padding: 10px;
-    background-color: #4CAF50;
+    background-color: #4CAF50; /* Verde para éxito */
     color: white;
     border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .notificacion.error {
-    background-color: #f44336;
+    background-color: #f44336; /* Rojo para error */
+}
+
+
+/* --- ANIMACIONES --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- RESPONSIVE --- */
@@ -199,6 +342,15 @@ body {
 
     .hero {
         height: 60vh;
+    }
+
+    .introduccion {
+        flex-direction: column;
+    }
+
+    .introduccion__imagen,
+    .introduccion__texto {
+        width: 100%;
     }
 
     .servicios__contenido {
