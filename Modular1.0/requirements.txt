@@ -3,8 +3,7 @@ Flask==3.1.0
 Flask-SocketIO==5.5.1
 eventlet==0.39.0
 gunicorn==21.2.0
-# Elimina websockets si usas Flask-SocketIO
-# websockets==14.2
+websockets==14.2
 
 # Base de datos
 psycopg2-binary==2.9.10
@@ -12,7 +11,6 @@ psycopg2-binary==2.9.10
 # Autenticación y seguridad
 Flask-Login==0.6.3
 Flask-Bcrypt==1.0.1
-Werkzeug>=2.0.0
 
 # Correos electrónicos y logging
 python-dotenv==1.0.1
