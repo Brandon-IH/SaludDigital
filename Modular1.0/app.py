@@ -222,62 +222,74 @@ class User(UserMixin):
         
 
     @staticmethod
-    def get_by_username(username):
-        conn = connection_pool.getconn()
-        try:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    SELECT id, username, password, email, full_name, birthdate, phone, area 
-                    FROM usuarios WHERE username = %s
-                """, (username,))
-                user_data = cur.fetchone()
-    
-                if user_data:
-                    print(f"🔍 Datos recuperados de la BD: {user_data}")  # Verifica que se está obteniendo un hash válido
-                    return User(*user_data)  # Devuelve una instancia de User con los datos recuperados
-                
-                logger.warning(f"⚠️ No se encontró usuario con username '{username}'")
-                return None
-    
-        except psycopg2.DatabaseError as e:
-            logger.error(f"❌ Error en la consulta get_by_username: {e}")
-            return None
-    
-        finally:
-            connection_pool.putconn(conn)
-
-
-
-    @staticmethod
-    def get_by_id(user_id):
-        try:
-            cur = conn.cursor()
-            cur.execute("SELECT id, username, password, email, full_name, birthdate, phone, area FROM usuarios WHERE id = %s", (user_id,))
+def get_by_username(username):
+    conn = connection_pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, username, password, email, full_name, birthdate, phone, area 
+                FROM usuarios WHERE username = %s
+            """, (username,))
             user_data = cur.fetchone()
-            cur.close()
+
+            if user_data:
+                print(f"🔍 Datos recuperados de la BD: {user_data}")
+                return User(*user_data)
+            
+            logger.warning(f"⚠️ No se encontró usuario con username '{username}'")
+            return None
+
+    except psycopg2.DatabaseError as e:
+        logger.error(f"❌ Error en la consulta get_by_username: {e}")
+        return None
+
+    finally:
+        connection_pool.putconn(conn)
+
+@staticmethod
+def get_by_id(user_id):
+    conn = connection_pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, username, password, email, full_name, birthdate, phone, area 
+                FROM usuarios WHERE id = %s
+            """, (user_id,))
+            user_data = cur.fetchone()
 
             if user_data:
                 return User(*user_data)
             return None
-        except Exception as e:
-            logger.error(f"❌ Error en la consulta get_by_id: {e}")
-            return None
 
-    
-    @staticmethod
-    def get_by_email(email):
-        try:
-            cur = conn.cursor()
-            cur.execute("SELECT id, username, password, email, full_name, birthdate, phone, area FROM usuarios WHERE email = %s", (email,))
+    except Exception as e:
+        logger.error(f"❌ Error en la consulta get_by_id: {e}")
+        return None
+
+    finally:
+        connection_pool.putconn(conn)
+
+@staticmethod
+def get_by_email(email):
+    conn = connection_pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, username, password, email, full_name, birthdate, phone, area 
+                FROM usuarios WHERE email = %s
+            """, (email,))
             user_data = cur.fetchone()
-            cur.close()
 
             if user_data:
                 return User(*user_data)
             return None
-        except Exception as e:
-            logger.error(f"❌ Error en la consulta get_by_email: {e}")
-            return None
+
+    except Exception as e:
+        logger.error(f"❌ Error en la consulta get_by_email: {e}")
+        return None
+
+    finally:
+        connection_pool.putconn(conn)
+
 
 
     @staticmethod
