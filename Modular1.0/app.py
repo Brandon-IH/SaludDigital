@@ -840,7 +840,11 @@ async def handle_connection(websocket, path):
         clients.discard(websocket)  # Quitar cliente de la lista
         logger.info(f"🔄 Conexión cerrada con {websocket.remote_address}")
         await websocket.close()
-
+def websocket_thread():
+    asyncio.set_event_loop(asyncio.new_event_loop())
+    start_server = websockets.serve(handle_connection, "0.0.0.0", 8765)
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))  # Flask en 8080
