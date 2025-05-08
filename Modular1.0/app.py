@@ -447,11 +447,16 @@ def serve_static(filename):
 @login_required
 def profile():
     user_id = current_user.id
+    conn = connection_pool.getconn()  # ✅ Obtener una nueva conexión
 
     try:
         with conn.cursor() as cur:
             # Obtener datos personales
-            cur.execute("SELECT full_name, birthdate, phone, area, email FROM usuarios WHERE id = %s", (user_id,))
+            cur.execute("""
+                SELECT full_name, birthdate, phone, area, email 
+                FROM usuarios 
+                WHERE id = %s
+            """, (user_id,))
             user_details = cur.fetchone()
 
             if not user_details:
@@ -472,9 +477,13 @@ def profile():
         return render_template('profile.html', user=current_user, user_details=user_details, citas=citas)
 
     except psycopg2.DatabaseError as e:
+        logger.error(f"❌ Error al obtener las citas: {e}")
         flash("Error al obtener datos del perfil", "danger")
-        print(e)
         return redirect(url_for('serve_index'))
+
+    finally:
+        connection_pool.putconn(conn)  # ✅ Siempre devuelve la conexión al pool
+
 
 
 
