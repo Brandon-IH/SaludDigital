@@ -521,6 +521,34 @@ def get_psicologia():
 def get_nutriologia():
     return render_template('nutriologia.html')  # Renderiza la plantilla de citas
 
+@app.route('/agendar', methods=['POST'])
+def agendar_cita():
+    conn = connection_pool.getconn()
+    try:
+        nombre = request.form['nombre']
+        apellidos = request.form['apellidos']
+        codigo = request.form['codigo']
+        correo = request.form['correo_electronico']
+        telefono = request.form['telefono']
+        departamento = request.form['servicio']
+        dia = request.form['fecha']
+        hora = request.form['hora']
+
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO citas (nombre_alumno, apellidos, codigo, correo_alumno, telefono, departamento, dia, hora, estatus)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (nombre, apellidos, codigo, correo, telefono, departamento, dia, hora, 'pendiente'))
+            conn.commit()
+
+        flash('Cita agendada con éxito')
+        return redirect('/')
+    except Exception as e:
+        logger.error(f"❌ Error al agendar cita: {e}")
+        return "Error al agendar cita", 500
+    finally:
+        connection_pool.putconn(conn)
+
 @app.route('/api/citas', methods=['GET'])
 @login_required
 def get_citas_data():
