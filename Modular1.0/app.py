@@ -525,30 +525,34 @@ def get_nutriologia():
 def agendar_cita():
     conn = connection_pool.getconn()
     try:
-        nombre = request.form['nombre']
-        apellidos = request.form['apellidos']
-        codigo = request.form['codigo']
-        correo = request.form['correo_electronico']
-        telefono = request.form['telefono']
-        departamento = request.form['servicio']
-        dia = request.form['fecha']
-        hora = request.form['hora']
-        celular = request.form['celular']
+        if request.is_json:
+            data = request.get_json()  # Si es JSON, úsalo
+        else:
+            data = request.form  # Si viene como formulario, úsalo
+
+        nombre = data.get('nombre_alumno', '')
+        apellidos = data.get('apellidos', '')
+        codigo = data.get('codigo', '')
+        correo = data.get('correo_alumno', '')
+        departamento = data.get('departamento', '')
+        dia = data.get('dia', '')
+        hora = data.get('hora', '')
+        celular = data.get('celular', '')
 
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO citas (nombre_alumno, apellidos, codigo, correo_alumno, departamento, dia, hora, celular, estatus)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (nombre, apellidos, codigo, correo, telefono, departamento, dia, hora, celular, 'pendiente'))
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (nombre, apellidos, codigo, correo, departamento, dia, hora, celular, 'pendiente'))
             conn.commit()
 
-        flash('Cita agendada con éxito')
-        return redirect('/')
+        return jsonify({"status": "success", "message": "Cita agendada correctamente"})  # 🛠 Devuelve JSON en lugar de redirigir
     except Exception as e:
         logger.error(f"❌ Error al agendar cita: {e}")
-        return "Error al agendar cita", 500
+        return jsonify({"status": "error", "message": str(e)}), 500
     finally:
         connection_pool.putconn(conn)
+
 
 @app.route('/api/citas', methods=['GET'])
 @login_required
