@@ -7,11 +7,14 @@ import smtplib # Importa el módulo smtplib para enviar correos electrónicos
 import subprocess  # Importa el módulo subprocess para ejecutar comandos del sistema
 from email.message import EmailMessage  # Importa la clase EmailMessage para crear mensajes de correo electrónico
 from datetime import datetime, date, time # Importa la clase datetime para trabajar con fechas y horas
+from flask_socketio import SocketIO
+from flask_socketio import emit
 from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for, flash  # Importa varias funciones y clases de Flask para crear la aplicación web
 from flask_bcrypt import Bcrypt  # Importa Bcrypt de Flask para manejar el hashing de contraseñas
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user  # Importa varias funciones y clases de Flask-Login para manejar la autenticación de usuarios
 from websockets.server import serve  # Importa la función serve de websockets para iniciar el servidor WebSocket
 import threading  # Importa el módulo threading para manejar hilos
+from threading import Thread
 import re  # Importa el módulo re para trabajar con expresiones regulares
 import os
 import psycopg2
@@ -147,7 +150,32 @@ def get_total_alumnos():
         logger.error(f"Error al obtener el total de alumnos: {e}")
         # Retorna 0 en caso de error
         return 0
+@socketio.on('connect')
+def handle_connect():
+    print("✅ Cliente WebSocket conectado")
+    emit('message', {"msg": "Conectado correctamente"})
 
+# 🏁 Ejecutar el hilo de actualizaciones al arrancar la app
+@app.before_first_request
+def start_background_thread():
+    thread = Thread(target=send_updates)
+    thread.daemon = True
+    thread.start()
+
+# 🧪 Ruta de prueba (puedes eliminarla si no la necesitas)
+@app.route('/')
+def index():
+    return "<h1>Servidor corriendo con WebSocket</h1>"
+
+def send_updates():
+    while True:
+        socketio.sleep(1)  # similar a asyncio.sleep
+        data = {
+            "comentarios": get_comment_data(),
+            "citas": get_today_appointments(),
+            "total_alumnos": get_total_alumnos()
+        }
+        socketio.emit('actualizacion', data)
 # Función para obtener los datos de los comentarios, incluyendo el total
 def get_comment_data():
     try:
@@ -192,6 +220,7 @@ def get_comment_data():
 
 # Aplicación Flask para gestión de citas y login
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
 bcrypt = Bcrypt(app)
 # Configura la clave secreta para la aplicación Flask
 app.config['SECRET_KEY'] = '214604219'
@@ -846,10 +875,10 @@ def websocket_thread():
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
 
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8080))  # Flask en 8080
-    threading.Thread(target=websocket_thread).start()  # WebSocket en hilo separado
-    app.run(host="0.0.0.0", port=port)
+# 🚀 Iniciar servidor con SocketIO
+if __name__ == '__main__':
+    port = int(os.getenv("PORT", 8080))
+    socketio.run(app, host='0.0.0.0', port=port)
 
 
 
