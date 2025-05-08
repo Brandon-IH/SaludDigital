@@ -112,38 +112,42 @@
             <form class="agendar-cita__formulario" action="/agendar" method="POST">
 
 
-                <label class="formulario__titulo" for="nombre">Nombre</label>
-                <input class="formulario__campo" type="text" id="nombre" name="nombre">
-
-                <label class="formulario__titulo" for="apellidos">Apellidos</label>
-                <input class="formulario__campo" type="text" id="apellidos" name="apellidos">
-
-                <label class="formulario__titulo" for="codigo">Código</label>
-                <input class="formulario__campo" type="number" id="codigo" name="codigo">
-
-                <label class="formulario__titulo" for="correo_electronico">Correo electrónico</label>
-                <input class="formulario__campo" type="email" id="correo_electronico" name="correo_electronico">
-
-                <label class="formulario__titulo" for="telefono">Teléfono</label>
-                <input class="formulario__campo" type="tel" id="telefono" name="telefono">
-
-                <label class="formulario__titulo" for="servicio">Servicio</label>
-                <select class="formulario__campo" name="servicio" id="servicio">
-
-                    <option value="" disabled selected hidden>- Selecciona una opción -</option>
-                    <option value="servicio_medico">Servicio medico</option>
-                    <option value="servicio_psicologico">Servicio psicológico</option>
-                    <option value="servicio_nutrimental">Servicio nutrimental</option>
-
+                <label for="nombre_alumno">Nombre del Alumno:</label>
+                <input type="text" id="nombre_alumno" name="nombre_alumno" required>
+    
+                <label for="apellidos">Apellidos del Alumno:</label>
+                <input type="text" id="apellidos" name="apellidos" required>
+                
+                <label for="correo_alumno">Correo del Alumno:</label>
+                <input type="email" id="correo_alumno" name="correo_alumno" required>
+    
+                <label for="codigo">Codigo del Alumno:</label>
+                <input type="number" id="codigo" name="codigo" required>
+                
+                <label for="departamento">Departamento:</label>
+                <select id="departamento" name="departamento" required>
+                    <option value="Psicologia">Psicologia</option>
+                    <option value="Nutricion">Nutricion</option>
+                    <option value="Consulta General">Consulta general</option>
                 </select>
-
-                <label class="formulario__titulo" for="fecha">Fecha</label>
-                <input class="formulario__campo" type="date" id="fecha" name="fecha">
-
-                <label class="formulario__titulo" for="hora">Hora</label>
-                <input class="formulario__campo" type="time" id="hora" name="hora">
-
-                <input class="formulario__boton" type="submit" value="Agendar cita">
+    
+                <label for="hora">Hora:</label>
+                <input type="time" id="hora" name="hora" required>
+                
+                <label for="dia">Día:</label>
+                <input type="date" id="dia" name="dia" required>
+    
+                <label for="celular">Numero del Alumno:</label>
+                <input type="number" id="celular" name="celular" required>
+                
+                <label for="estatus">Estatus:</label>
+                <select id="estatus" name="estatus" required>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="completada">Completada</option>
+                    <option value="cancelada">Cancelada</option>
+                </select>
+                
+                <button class="button" type="submit">Agendar cita</button>
 
             </form>
 
@@ -174,5 +178,6 @@
 
     <!-- JAVASCRIPT -->
     <script src="static/js/inicio.js" defer></script>
+    <script src="/static/js/citas.js" defer></script>
 </body>
 </html>
