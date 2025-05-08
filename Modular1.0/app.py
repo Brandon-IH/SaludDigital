@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo
 
 # Configurar la conexión global
 DATABASE_URL = os.getenv("DATABASE_URL")
+conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
 conn = None
 cur = None
 
@@ -219,78 +220,101 @@ class User(UserMixin):
 
     @staticmethod
     def get_by_username(username):
-        # Ejecuta una consulta SQL para obtener un usuario por su nombre de usuario
-        cur.execute("""
+        try:
+            cur = conn.cursor()
+            cur.execute("""
                 SELECT id, username, password, email, full_name, birthdate, phone, area 
                 FROM usuarios WHERE username = %s
-            """, (username,))        # Obtiene los datos del usuario
-        user_data = cur.fetchone()
-        # Si se encuentran datos del usuario, retorna una instancia de User
-        if user_data:
-            return User(*user_data)
-        # Si no se encuentran datos del usuario, retorna None
-        return None
+            """, (username,))
+            user_data = cur.fetchone()
+            cur.close()
+
+            if user_data:
+                return User(*user_data)
+            return None
+        except Exception as e:
+            logger.error(f"❌ Error en la consulta get_by_username: {e}")
+            return None
 
     @staticmethod
     def get_by_id(user_id):
-        # Ejecuta una consulta SQL para obtener un usuario por su ID
-        cur.execute("SELECT id, username, password, email, full_name, birthdate, phone, area FROM usuarios WHERE id = %s", (user_id,))
-        # Obtiene los datos del usuario
-        user_data = cur.fetchone()
-        # Si se encuentran datos del usuario, retorna una instancia de User
-        if user_data:
-            return User(*user_data)
-        # Si no se encuentran datos del usuario, retorna None
-        return None
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT id, username, password, email, full_name, birthdate, phone, area FROM usuarios WHERE id = %s", (user_id,))
+            user_data = cur.fetchone()
+            cur.close()
+
+            if user_data:
+                return User(*user_data)
+            return None
+        except Exception as e:
+            logger.error(f"❌ Error en la consulta get_by_id: {e}")
+            return None
+
     
     @staticmethod
     def get_by_email(email):
-        cur.execute("SELECT id, username, password, email, full_name, birthdate, phone, area FROM usuarios WHERE email = %s", (email,))
-        user_data = cur.fetchone()
-        if user_data:
-            return User(*user_data)
-        return None
+        try:
+            cur = conn.cursor()
+            cur.execute("SELECT id, username, password, email, full_name, birthdate, phone, area FROM usuarios WHERE email = %s", (email,))
+            user_data = cur.fetchone()
+            cur.close()
+
+            if user_data:
+                return User(*user_data)
+            return None
+        except Exception as e:
+            logger.error(f"❌ Error en la consulta get_by_email: {e}")
+            return None
 
 
     @staticmethod
     def create(username, password, email):
-        if not email.endswith("@gmail.com"):
-            raise ValueError("El correo debe ser de Gmail")
-        
-        # Genera un hash de la contraseña
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        # Ejecuta una consulta SQL para insertar un nuevo usuario en la base de datos
-        cur.execute("INSERT INTO usuarios (username, password, email) VALUES (%s, %s, %s) RETURNING id", (username, hashed_password, email))
-        # Obtiene el ID del nuevo usuario
-        user_id = cur.fetchone()[0]
-        # Confirma los cambios en la base de datos
-        conn.commit()
-        # Retorna una instancia de User con los datos del nuevo usuario
-        return User(user_id, username, hashed_password)
+        try:
+            if not email.endswith("@gmail.com"):
+                raise ValueError("El correo debe ser de Gmail")
+
+            hashed_password = generate_password_hash(password)
+
+            cur = conn.cursor()
+            cur.execute("INSERT INTO usuarios (username, password, email) VALUES (%s, %s, %s) RETURNING id", 
+                        (username, hashed_password, email))
+            user_id = cur.fetchone()[0]
+            conn.commit()
+            cur.close()
+
+            return User(user_id, username, hashed_password)
+        except Exception as e:
+            logger.error(f"❌ Error al crear usuario: {e}")
+            return None
+
+
     
 
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    user_data = User.get_by_id(user_id)  # Obtiene los datos del usuario por su ID
+    user_data = User.get_by_id(user_id)
     if user_data is None:
-        logger.error(f"Error al cargar el usuario con ID {user_id}: Datos del usuario no encontrados")  # Registra un error si no se encuentran datos del usuario
-        return None  # Retorna None si no se encuentran datos del usuario
-    return user_data  # Retorna los datos del usuario
+        logger.error(f"❌ Error al cargar el usuario con ID {user_id}: Datos no encontrados")
+        return None
+    return user_data
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']  # Obtiene el nombre de usuario del formulario
-        password = request.form['password']  # Obtiene la contraseña del formulario
-        user = User.get_by_username(username)  # Obtiene el usuario por su nombre de usuario
-        if user and bcrypt.check_password_hash(user.password, password):  # Verifica si el usuario existe y la contraseña es correcta
-            login_user(user)  # Inicia sesión con el usuario
-            return redirect(url_for('serve_index'))  # Redirige a la página principal
+        username = request.form['username']
+        password = request.form['password']
+        user = User.get_by_username(username)
+
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            return redirect(url_for('serve_index'))
         else:
-            flash('Nombre de usuario o contraseña incorrectos', 'danger')  # Muestra un mensaje de error si las credenciales son incorrectas
-    return render_template('login.html')  # Renderiza la plantilla de inicio de sesión
+            flash('Nombre de usuario o contraseña incorrectos', 'danger')
+
+    return render_template('login.html')
 
 @app.route('/logout')
 @login_required
@@ -309,37 +333,38 @@ def register():
         try:
             validate_email(email)  # Validar el email
             validate_password(password)  # Validar la contraseña
-            
+
             # Verificar si el nombre de usuario ya existe
             with conn.cursor() as cur:
                 cur.execute("SELECT id FROM usuarios WHERE username = %s", (username,))
                 existing_user = cur.fetchone()
                 if existing_user:
-                    raise ValueError("El nombre de usuario ya está en uso, elige otro.")
+                    flash("El nombre de usuario ya está en uso, elige otro.", "danger")
+                    return redirect(url_for("register"))
 
-            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            hashed_password = generate_password_hash(password)
 
-            # Si el nombre es único, proceder con la inserción
+            # Insertar el nuevo usuario
             with conn.cursor() as cur:
                 cur.execute(
                     "INSERT INTO usuarios (username, password, email) VALUES (%s, %s, %s) RETURNING id",
                     (username, hashed_password, email)
                 )
+                user_id = cur.fetchone()[0]
                 conn.commit()
-                
+
             enviar_correo_bienvenida(destinatario=email, nombre_usuario=username, password=password)
 
             flash("Registro exitoso", "success")
-            return redirect(url_for("register"))
-
-        except ValueError as ve:
-            flash(str(ve), "danger")  # Mensaje de error si el nombre de usuario ya está en uso
+            return redirect(url_for("login"))
 
         except psycopg2.DatabaseError as db_err:
             conn.rollback()
             flash("Error de base de datos", "danger")
+            return redirect(url_for("register"))
 
     return render_template("register.html")
+
 
 @app.route('/update_profile', methods=['POST'])
 @login_required
@@ -351,20 +376,20 @@ def update_profile():
     area = request.form.get('area')
 
     try:
-        cur.execute("""
-            UPDATE usuarios 
-            SET email = %s, full_name = %s, birthdate = %s, phone = %s, area = %s 
-            WHERE id = %s
-        """, (email, full_name, birthdate, phone, area, current_user.id))
-        conn.commit()
-        flash('Perfil actualizado correctamente.', 'success')
-    except Exception as e:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE usuarios 
+                SET email = %s, full_name = %s, birthdate = %s, phone = %s, area = %s 
+                WHERE id = %s
+            """, (email, full_name, birthdate, phone, area, current_user.id))
+            conn.commit()
+            flash('Perfil actualizado correctamente.', 'success')
+    except psycopg2.DatabaseError as e:
         conn.rollback()
         flash('Error al actualizar el perfil.', 'danger')
         print(e)
 
     return redirect(url_for('profile'))
-
 
 @app.route('/')
 @login_required
@@ -381,23 +406,34 @@ def serve_static(filename):
 def profile():
     user_id = current_user.id
 
-    # Obtener datos personales
-    cur.execute("SELECT full_name, birthdate, phone, area, email FROM usuarios WHERE id = %s", (user_id,))
-    user_details = cur.fetchone()
+    try:
+        with conn.cursor() as cur:
+            # Obtener datos personales
+            cur.execute("SELECT full_name, birthdate, phone, area, email FROM usuarios WHERE id = %s", (user_id,))
+            user_details = cur.fetchone()
 
-    # user_details será: (full_name, birthdate, phone, area, email)
-    user_email = user_details[4]  # correo del usuario actual
+            if not user_details:
+                flash("No se encontraron datos del usuario", "danger")
+                return redirect(url_for('serve_index'))
 
-    # Obtener citas pendientes según el correo y estatus
-    cur.execute("""
-        SELECT departamento, dia, hora
-        FROM citas
-        WHERE correo_alumno = %s AND estatus = 'pendiente'
-        ORDER BY dia, hora
-    """, (user_email,))
-    citas = cur.fetchall()
+            user_email = user_details[4]
 
-    return render_template('profile.html', user=current_user, user_details=user_details, citas=citas)
+            # Obtener citas pendientes según el correo y estatus
+            cur.execute("""
+                SELECT departamento, dia, hora
+                FROM citas
+                WHERE correo_alumno = %s AND estatus = 'pendiente'
+                ORDER BY dia, hora
+            """, (user_email,))
+            citas = cur.fetchall()
+
+        return render_template('profile.html', user=current_user, user_details=user_details, citas=citas)
+
+    except psycopg2.DatabaseError as e:
+        flash("Error al obtener datos del perfil", "danger")
+        print(e)
+        return redirect(url_for('serve_index'))
+
 
 
 
@@ -438,138 +474,172 @@ def get_nutriologia():
 @login_required
 def get_citas_data():
     try:
-        cur.execute("SELECT id, nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, estatus FROM citas")  # Ejecuta una consulta SQL para obtener todas las citas
-        rows = cur.fetchall()  # Obtiene todas las filas resultantes de la consulta
-        citas = []  # Lista para almacenar las citas
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, estatus FROM citas")
+            rows = cur.fetchall()
+
+        citas = []
         for row in rows:
-            hora = row[6]  # Obtiene la hora de la cita
-            dia = row[7]  # Obtiene el día de la cita
-            if isinstance(hora, str):
-                hora = datetime.strptime(hora, '%H:%M:%S').time()  # Convierte la hora a un objeto time si es una cadena
-            if isinstance(dia, str):
-                dia = datetime.strptime(dia, '%Y-%m-%d').date()  # Convierte el día a un objeto date si es una cadena
+            hora = row[6] if isinstance(row[6], datetime) else datetime.strptime(row[6], '%H:%M:%S').time()
+            dia = row[7] if isinstance(row[7], datetime) else datetime.strptime(row[7], '%Y-%m-%d').date()
+
             citas.append({
-                'id': row[0],  # ID de la cita
-                'nombre_alumno': row[1],  # Nombre del alumno
-                'apellidos': row[2],  # Apellidos del alumno
-                'correo_alumno': row[3],  # Correo del alumno
-                'codigo': row[4],  # Código del alumno
-                'departamento': row[5],  # Departamento
-                'hora': hora.strftime('%H:%M'),  # Formato de hora HH:MM
-                'dia': dia.strftime('%Y-%m-%d'),  # Formato de fecha YYYY-MM-DD
-                'estatus': row[8]  # Estatus de la cita
+                'id': row[0],
+                'nombre_alumno': row[1],
+                'apellidos': row[2],
+                'correo_alumno': row[3],
+                'codigo': row[4],
+                'departamento': row[5],
+                'hora': hora.strftime('%H:%M'),
+                'dia': dia.strftime('%Y-%m-%d'),
+                'estatus': row[8]
             })
-        return jsonify(citas)  # Retorna las citas en formato JSON
+
+        return jsonify(citas)
+
     except Exception as e:
-        logger.error(f"Error al obtener las citas: {e}")  # Registra un mensaje de error si ocurre una excepción
-        return jsonify({"error": "Error al obtener las citas"}), 500  # Retorna un mensaje de error en formato JSON
+        logger.error(f"❌ Error al obtener las citas: {e}")
+        return jsonify({"error": "Error al obtener las citas"}), 500
+
 
 @app.route('/update_password', methods=['GET', 'POST'])
 @login_required
 def update_password():
     if request.method == 'POST':
-        current_password = request.form['current_password']  # Obtiene la contraseña actual del formulario
-        new_password = request.form['new_password']  # Obtiene la nueva contraseña del formulario
-        
-        user = User.get_by_id(current_user.id)  # Obtiene los datos del usuario actual
-        
-        if user and bcrypt.check_password_hash(user.password, current_password):  # Verifica si la contraseña actual es correcta
-            hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')  # Genera un hash de la nueva contraseña
-            cur.execute("UPDATE usuarios SET password = %s WHERE id = %s", (hashed_password, user.id))  # Actualiza la contraseña en la base de datos
-            conn.commit()  # Confirma los cambios en la base de datos
-            flash('Contraseña actualizada exitosamente', 'success')  # Muestra un mensaje de éxito
-            return redirect(url_for('serve_index'))  # Redirige a la página principal
-        else:
-            flash('Contraseña actual incorrecta', 'danger')  # Muestra un mensaje de error si la contraseña actual es incorrecta
-    return render_template('update_password.html')  # Renderiza la plantilla de actualización de contraseña
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+
+        user = User.get_by_id(current_user.id)
+
+        if user and check_password_hash(user.password, current_password):
+            hashed_password = generate_password_hash(new_password)
+
+            try:
+                with conn.cursor() as cur:
+                    cur.execute("UPDATE usuarios SET password = %s WHERE id = %s", (hashed_password, user.id))
+                    conn.commit()
+                
+                flash('Contraseña actualizada exitosamente', 'success')
+                return redirect(url_for('serve_index'))
+
+            except psycopg2.DatabaseError as e:
+                conn.rollback()
+                flash("Error al actualizar la contraseña", "danger")
+                logger.error(f"❌ Error en la actualización de contraseña: {e}")
+                return redirect(url_for('update_password'))
+
+        flash('Contraseña actual incorrecta', 'danger')
+
+    return render_template('update_password.html')
 
 
 @app.route('/profile_edit', methods=['GET'])
 @login_required
 def profile_edit():
     try:
-        # Consulta para obtener citas pendientes del usuario actual
-        cur.execute("SELECT departamento, dia, hora FROM citas WHERE codigo = %s AND estatus = 'pendiente'", (current_user.id,))
-        citas = cur.fetchall()
-        
-        # Renderiza el template con la info del usuario y sus citas
+        with conn.cursor() as cur:
+            cur.execute("SELECT departamento, dia, hora FROM citas WHERE codigo = %s AND estatus = 'pendiente'", (current_user.id,))
+            citas = cur.fetchall()
+
         return render_template("profile.html", user=current_user, citas=citas)
+
     except Exception as e:
-        print(f"Error al obtener citas: {e}")
+        logger.error(f"❌ Error al obtener citas: {e}")
         return render_template("profile.html", user=current_user, citas=[])
+
 
 @app.route('/api/citas', methods=['POST'])
 @login_required
 def add_cita():
-    data = request.json  # Obtiene los datos de la cita del cuerpo de la solicitud
+    data = request.json
     try:
-        cur.execute("INSERT INTO citas (nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, estatus) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-                    (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['estatus']))  # Inserta una nueva cita en la base de datos
-        conn.commit()  # Confirma los cambios en la base de datos
-        return '', 204  # Retorna una respuesta vacía con el código de estado 204
-    except Exception as e:
-        logger.error(f"Error al agregar una cita: {e}")  # Registra un mensaje de error si ocurre una excepción
-        return jsonify({"error": "Error al agregar una cita"}), 500  # Retorna un mensaje de error en formato JSON
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO citas (nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, estatus) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['estatus']))
+            conn.commit()
+        return '', 204
+    except psycopg2.DatabaseError as e:
+        conn.rollback()
+        logger.error(f"❌ Error al agregar una cita: {e}")
+        return jsonify({"error": "Error al agregar una cita"}), 500
+
 
 @app.route('/api/citas/<int:id>', methods=['PUT'])
 @login_required
 def update_cita(id):
-    data = request.json  # Obtiene los datos de la cita del cuerpo de la solicitud
+    data = request.json
     try:
-        cur.execute("UPDATE citas SET nombre_alumno=%s, apellidos=%s, correo_alumno=%s, codigo=%s, departamento=%s, hora=%s, dia=%s, estatus=%s WHERE id=%s",
-                    (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['estatus'], id))  # Actualiza una cita existente en la base de datos
-        conn.commit()  # Confirma los cambios en la base de datos
-        return '', 204  # Retorna una respuesta vacía con el código de estado 204
-    except Exception as e:
-        logger.error(f"Error al actualizar la cita: {e}")  # Registra un mensaje de error si ocurre una excepción
-        return jsonify({"error": "Error al actualizar la cita"}), 500  # Retorna un mensaje de error en formato JSON
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE citas 
+                SET nombre_alumno=%s, apellidos=%s, correo_alumno=%s, codigo=%s, departamento=%s, hora=%s, dia=%s, estatus=%s 
+                WHERE id=%s
+            """, (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['estatus'], id))
+            conn.commit()
+        return '', 204
+    except psycopg2.DatabaseError as e:
+        conn.rollback()
+        logger.error(f"❌ Error al actualizar la cita: {e}")
+        return jsonify({"error": "Error al actualizar la cita"}), 500
+
 
 @app.route('/api/citas/<int:id>', methods=['DELETE'])
 @login_required
 def delete_cita(id):
     try:
-        cur.execute("DELETE FROM citas WHERE id=%s", (id,))  # Elimina una cita de la base de datos por su ID
-        conn.commit()  # Confirma los cambios en la base de datos
-        return '', 204  # Retorna una respuesta vacía con el código de estado 204
-    except Exception as e:
-        logger.error(f"Error al eliminar la cita: {e}")  # Registra un mensaje de error si ocurre una excepción
-        return jsonify({"error": "Error al eliminar la cita"}), 500  # Retorna un mensaje de error en formato JSON
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM citas WHERE id=%s", (id,))
+            conn.commit()
+        return '', 204
+    except psycopg2.DatabaseError as e:
+        conn.rollback()
+        logger.error(f"❌ Error al eliminar la cita: {e}")
+        return jsonify({"error": "Error al eliminar la cita"}), 500
 
 def actualizar_citas_periodicamente(intervalo):
     def ejecutar():
-        logger.info("Ejecutando actualización de citas vencidas...")  # Registra un mensaje de información
-        update_citas_vencidas()  # Llama a la función para actualizar las citas vencidas
-        planificar()  # Planifica la próxima ejecución
-    
-    def planificar():
-        logger.info(f"Planificando próxima actualización en {intervalo} segundos...")  # Registra un mensaje de información
-        threading.Timer(intervalo, ejecutar).start()  # Inicia un temporizador para ejecutar la función después del intervalo especificado
+        logger.info("🔄 Ejecutando actualización de citas vencidas...")
+        update_citas_vencidas()
+        planificar()
 
-    planificar()  # Planifica la primera ejecución
+    def planificar():
+        logger.info(f"⏳ Planificando próxima actualización en {intervalo} segundos...")
+        threading.Timer(intervalo, ejecutar).start()
+
+    planificar()
 
 def update_citas_vencidas():
     try:
-        now = datetime.now().time()  # Solo obtiene la hora actual
-        today = datetime.now().date()  # Obtiene la fecha actual
+        now = datetime.now().time()
+        today = datetime.now().date()
 
-        # Actualiza el estatus de las citas vencidas a 'completada'
-        cur.execute("""
-            UPDATE citas 
-            SET estatus = 'completada' 
-            WHERE hora < %s AND dia <= %s AND estatus = 'pendiente'
-        """, (now, today))
-        conn.commit()  # Confirma los cambios en la base de datos
-        logger.info("Citas vencidas actualizadas a 'completada'")  # Registra un mensaje de éxito
-    except Exception as e:
-        logger.error(f"Error al actualizar citas vencidas: {e}")  # Registra un mensaje de error si ocurre una excepción
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE citas 
+                SET estatus = 'completada' 
+                WHERE hora < %s AND dia <= %s AND estatus = 'pendiente'
+            """, (now, today))
+            conn.commit()
+
+        logger.info("✅ Citas vencidas actualizadas a 'completada'")
+
+    except psycopg2.DatabaseError as e:
+        conn.rollback()
+        logger.error(f"❌ Error al actualizar citas vencidas: {e}")
+
 
 def get_user_appointments(user_id):
     try:
-        cur.execute("SELECT departamento, dia, hora FROM citas WHERE codigo = %s AND estatus = 'pendiente'", (user_id,))
-        rows = cur.fetchall()
+        with conn.cursor() as cur:
+            cur.execute("SELECT departamento, dia, hora FROM citas WHERE codigo = %s AND estatus = 'pendiente'", (user_id,))
+            rows = cur.fetchall()
+        
         return [{"departamento": r[0], "dia": str(r[1]), "hora": str(r[2])} for r in rows]
-    except Exception as e:
-        logger.error(f"Error al obtener citas del usuario {user_id}: {e}")
+
+    except psycopg2.DatabaseError as e:
+        logger.error(f"❌ Error al obtener citas del usuario {user_id}: {e}")
         return []
     
 @app.route('/api/comentarios', methods=['POST'])
@@ -578,15 +648,27 @@ def agregar_comentario():
     comentario = data.get('comentario')
 
     if comentario:
-        cur.execute("INSERT INTO comentarios (comentario) VALUES (%s)", (comentario,))
-        conn.commit()
+        try:
+            with conn.cursor() as cur:
+                cur.execute("INSERT INTO comentarios (comentario) VALUES (%s)", (comentario,))
+                conn.commit()
 
-        # Ejecutar clasificación de comentarios
-        subprocess.Popen(["python", "D:/Brandon/Modular1.0/traductor.py"])
+            # Verificar que el archivo del proceso existe antes de ejecutarlo
+            script_path = "D:/Brandon/Modular1.0/traductor.py"
+            if os.path.exists(script_path):
+                subprocess.Popen(["python", script_path])
+            else:
+                logger.error(f"❌ El archivo '{script_path}' no existe.")
 
-        return jsonify({"message": "Comentario recibido y procesado"}), 200
+            return jsonify({"message": "Comentario recibido y procesado"}), 200
+        except psycopg2.DatabaseError as e:
+            conn.rollback()
+            logger.error(f"❌ Error al agregar comentario: {e}")
+            return jsonify({"error": "Error al agregar comentario"}), 500
     else:
         return jsonify({"error": "Comentario no proporcionado"}), 400
+
+
 
 async def enviar_a_clientes(msg):
     for client in clients.copy():  # Copia para evitar modificaciones durante la iteración
@@ -594,7 +676,7 @@ async def enviar_a_clientes(msg):
             try:
                 await client.send(msg)
             except Exception as e:
-                print(f"Error enviando mensaje: {e}")
+                logger.error(f"❌ Error enviando mensaje: {e}")
                 clients.remove(client)  # Eliminar clientes desconectados
 
 
@@ -634,27 +716,38 @@ async def handle_connection(websocket, path):
         logger.info(f"Conexión cerrada con {websocket.remote_address}")  # Registra el cierre de la conexión
         await websocket.close()  # Cierra la conexión WebSocket
 # Función para enviar actualizaciones de comentarios o citas a todos los clientes conectados
-async def notify_clients_new_comment():
-    comment_data = get_comment_data()  # Obtiene los comentarios actualizados
-    appointments = get_today_appointments()  # Obtiene las citas del día
-    total_alumnos = get_total_alumnos()  # Obtiene el total de alumnos
+async def handle_connection(websocket, path):
+    clients.add(websocket)  # Agregar cliente
+    try:
+        logger.info(f"✅ Cliente conectado: {websocket.remote_address}")
 
-    response_data = {
-        "comentarios": comment_data,
-        "citas": appointments,
-        "total_alumnos": total_alumnos
-    }
+        while True:
+            await asyncio.sleep(1)  # Evita sobrecargar el servidor
 
-    # Enviar los datos a todos los clientes conectados
-    for client in clients:
-        await client.send(json.dumps(response_data))
-async def start_websocket():
-    server = await serve(handle_connection, "0.0.0.0", 8765)  # WebSocket en 8765
-    print("✅ WebSocket corriendo en ws://0.0.0.0:8765")
-    await server.wait_closed()
+            comment_data = get_comment_data()
+            appointments = get_today_appointments()
+            total_alumnos = get_total_alumnos()
 
-def websocket_thread():
-    asyncio.run(start_websocket())  # Inicia WebSocket de forma bloqueante
+            response_data = {
+                "comentarios": comment_data,
+                "citas": appointments,
+                "total_alumnos": total_alumnos
+            }
+
+            logger.info(f"📡 Enviando datos actualizados: {response_data}")
+            await websocket.send(json.dumps(response_data))  
+
+    except websockets.exceptions.ConnectionClosed:
+        logger.warning(f"⚠️ Cliente desconectado: {websocket.remote_address}")
+
+    except Exception as e:
+        logger.error(f"❌ Error en conexión WebSocket con {websocket.remote_address}: {e}")
+
+    finally:
+        clients.discard(websocket)  # Quitar cliente de la lista
+        logger.info(f"🔄 Conexión cerrada con {websocket.remote_address}")
+        await websocket.close()
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))  # Flask en 8080
