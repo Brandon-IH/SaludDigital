@@ -314,17 +314,28 @@ def load_user(user_id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+
+        if not username or not password:
+            flash('⚠️ Nombre de usuario y contraseña son obligatorios', 'danger')
+            return redirect(url_for('login'))
+
         user = User.get_by_username(username)
 
-        if user and check_password_hash(user.password, password):
+        if user:
+            print(f"🔍 Usuario encontrado: {user.username}, Hash almacenado: {user.password}")  # Depuración
+        else:
+            logger.warning(f"⚠️ No se encontró usuario con username '{username}'")
+        
+        # Validar que el hash de la BD es correcto antes de hacer check_password_hash
+        if user and user.password and user.password.startswith("$2b$") and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('serve_index'))
         else:
-            flash('Nombre de usuario o contraseña incorrectos', 'danger')
-
-    return render_template('login.html')
+            flash('❌ Nombre de usuario o contraseña incorrectos', 'danger')
+            logger.warning(f"⚠️ Fallo en autenticación para usuario '{username}'")
+            return redirect(url_for('login'))
 
 @app.route('/logout')
 @login_required
