@@ -666,9 +666,9 @@ def add_cita():
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO citas (nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, estatus) 
+                INSERT INTO citas (nombre_alumno, apellidos, correo_alumno, codigo, departamento, hora, dia, celular, estatus) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['estatus']))
+            """, (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['celular'], data['estatus']))
             conn.commit()
         return '', 204
     except psycopg2.DatabaseError as e:
@@ -688,9 +688,9 @@ def update_cita(id):
         with conn.cursor() as cur:
             cur.execute("""
                 UPDATE citas 
-                SET nombre_alumno=%s, apellidos=%s, correo_alumno=%s, codigo=%s, departamento=%s, hora=%s, dia=%s, estatus=%s 
+                SET nombre_alumno=%s, apellidos=%s, correo_alumno=%s, codigo=%s, departamento=%s, hora=%s, dia=%s, celular%, estatus=%s 
                 WHERE id=%s
-            """, (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['estatus'], id))
+            """, (data['nombre_alumno'], data['apellidos'], data['correo_alumno'], data['codigo'], data['departamento'], data['hora'], data['dia'], data['celular'], data['estatus'], id))
             conn.commit()
         return '', 204
     except psycopg2.DatabaseError as e:
