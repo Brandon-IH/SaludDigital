@@ -30,13 +30,6 @@ from email.message import EmailMessage
 logging.basicConfig(level=logging.INFO)  # Configura el nivel de log a INFO
 logger = logging.getLogger(__name__)  # Crea un logger con el nombre del módulo actual
 
-# Intenta obtener DATABASE_URL desde variables de entorno
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-# Configurar logger
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 # Obtener la URL de la base de datos desde Railway
 DATABASE_URL = os.getenv("DATABASE_URL")
 
