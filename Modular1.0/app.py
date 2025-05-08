@@ -323,12 +323,6 @@ def login():
 
         user = User.get_by_username(username)
 
-        if user:
-            print(f"🔍 Usuario encontrado: {user.username}, Hash almacenado: {user.password}")  # Depuración
-        else:
-            logger.warning(f"⚠️ No se encontró usuario con username '{username}'")
-        
-        # Validar que el hash de la BD es correcto antes de hacer check_password_hash
         if user and user.password and user.password.startswith("$2b$") and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('serve_index'))
@@ -336,6 +330,9 @@ def login():
             flash('❌ Nombre de usuario o contraseña incorrectos', 'danger')
             logger.warning(f"⚠️ Fallo en autenticación para usuario '{username}'")
             return redirect(url_for('login'))
+    
+    # ✅ Manejo de la solicitud GET para mostrar el formulario de login
+    return render_template('login.html')
 
 @app.route('/logout')
 @login_required
