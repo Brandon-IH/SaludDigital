@@ -55,7 +55,7 @@ def enviar_correo_bienvenida(destinatario, nombre_usuario, password):
     mensaje['To'] = destinatario
 
     # URL personalizada para recuperación de contraseña (puede ser un token más adelante)
-    link_recuperacion = f'http://127.0.0.1:5000/update_password'
+    link_recuperacion = f'https://salud-digital-cucei.up.railway.app/update_password'
 
     mensaje.set_content(f"""
     Hola {nombre_usuario},
