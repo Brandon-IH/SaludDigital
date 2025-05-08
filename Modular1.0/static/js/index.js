@@ -1,5 +1,5 @@
 // Conexión al servidor WebSocket
-const socket = new WebSocket("ws://localhost:8765");
+const socket = new WebSocket("wss://salud-digital-cucei.up.railway.app:8765");
     
 socket.onmessage = function(event) {
     const data = JSON.parse(event.data);
