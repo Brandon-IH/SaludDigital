@@ -326,9 +326,13 @@ def login():
         if user:
             print(f"🔍 Usuario encontrado: {user.username}, Hash almacenado: {user.password}")  # Depuración
 
-        # ✅ Convertir la contraseña almacenada en string explícitamente antes de compararla
+        # ✅ Validar que la contraseña ingresada por el usuario no esté vacía o mal formateada
+        if not password or len(password) < 6:
+            flash("⚠️ La contraseña ingresada es demasiado corta o vacía.", "danger")
+            return redirect(url_for('login'))
+
         stored_password = str(user.password) if user and user.password else None
-        
+
         if stored_password and stored_password.startswith("$2b$") and check_password_hash(stored_password, password):
             login_user(user)
             return redirect(url_for('serve_index'))
@@ -336,7 +340,7 @@ def login():
             flash('❌ Nombre de usuario o contraseña incorrectos', 'danger')
             logger.warning(f"⚠️ Fallo en autenticación para usuario '{username}'")
             return redirect(url_for('login'))
-    
+
     return render_template('login.html')
 
 @app.route('/logout')
