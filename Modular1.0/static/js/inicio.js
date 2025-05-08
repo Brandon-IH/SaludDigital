@@ -70,6 +70,39 @@ function mostrarNotificacion(mensaje, tipo) {
     }, 3000); // La notificación desaparece después de 3 segundos
 }
 
+document.getElementById('citasForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Evita la recarga de la página
+
+    const cita = {
+        nombre_alumno: document.getElementById('nombre_alumno').value,
+        apellidos: document.getElementById('apellidos').value,
+        correo_alumno: document.getElementById('correo_alumno').value,
+        codigo: document.getElementById('codigo').value,
+        departamento: document.getElementById('departamento').value,
+        hora: document.getElementById('hora').value,
+        dia: document.getElementById('dia').value,
+        celular: document.getElementById('celular').value,
+        estatus: 'pendiente'
+    };
+
+    fetch('/agendar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cita)
+    })
+    .then(response => response.json())
+    .then(data => {
+        showMessage('Cita registrada correctamente');
+        console.log("Cita enviada:", data);
+    })
+    .catch(error => {
+        console.error('Error al registrar cita:', error);
+        showMessage('Error al registrar cita', true);
+    });
+
+    // Resetear el formulario después de enviarlo
+    event.target.reset();
+});
 
 
 // FUNCTION: DESPLAZAR
